@@ -1,6 +1,8 @@
 #include <muradin/net/net_address.h>
 #include <muradin/net/endian.h>
+#include <arpa/inet.h>
 
+#include <string.h>
 
 namespace muradin{
 namespace net{
@@ -9,14 +11,14 @@ namespace net{
 		{
 			m_address.sin_family=AF_INET;
 			m_address.sin_port= uint16_hton(port);
-			net_pton(AF_INET,ip.c_str(),&m_address.sin_addr);
+			inet_pton(AF_INET,ip.c_str(),&m_address.sin_addr);
 		}
 
 		endpoint_v4::endpoint_v4(const std::string& ip)
 		{
 			m_address.sin_family=AF_INET;
 			m_address.sin_port= uint16_hton(kPortAny);
-			net_pton(AF_INET,ip.c_str(),&m_address.sin_addr);
+			inet_pton(AF_INET,ip.c_str(),&m_address.sin_addr);
 		}
 
 		endpoint_v4::endpoint_v4(boost::uint16_t port)
@@ -50,7 +52,7 @@ namespace net{
 		const std::string		endpoint_v4::get_ip()const
 		{
 			char addr_str[100]={0};
-			net_ntop(m_address.sin_family,&m_address.sin_addr,addr_str,sizeof(addr_str) );
+			inet_ntop(m_address.sin_family,&m_address.sin_addr,addr_str,sizeof(addr_str) );
 			return std::string(addr_str);
 		}
 
@@ -63,7 +65,7 @@ namespace net{
 		{
 			char addr_str[100]={0};
 			int32_t	ip_addr=INADDR_ANY;
-			net_ntop(AF_INET,&ip_addr,addr_str,sizeof(addr_str) );
+			inet_ntop(AF_INET,&ip_addr,addr_str,sizeof(addr_str) );
 			return std::string(addr_str);
 		}
 

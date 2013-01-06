@@ -1,6 +1,7 @@
 #ifndef MURADIN_NET_NET_ADDRESS_H__
 #define	MURADIN_NET_NET_ADDRESS_H__
 
+#include <muradin/platform/predef.h>
 /// for sockaddr_in
 #if defined(PREDEF_OS_WINDOWS)
 	#include <winsock.h>

@@ -1,6 +1,7 @@
 #ifndef MURADIN_NET_ENDIAN_H_
 #define MURADIN_NET_ENDIAN_H_
 
+#include <muradin/platform/predef.h>
 #include <boost/cstdint.hpp>
 
 namespace muradin{
