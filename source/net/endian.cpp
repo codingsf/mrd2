@@ -8,32 +8,32 @@
 namespace muradin{
 namespace net{
 
-	uint16_t	uint16_hton(uint16_t val)
+	boost::uint16_t	uint16_hton(boost::uint16_t val)
 	{
 		return be16toh(val);
 	}
 
-	uint16_t	uint16_ntoh(uint16_t val)
+	boost::uint16_t	uint16_ntoh(boost::uint16_t val)
 	{
 		return be16toh(val);
 	}
 
-	uint32_t	uint32_hton(uint32_t val)
+	boost::uint32_t	uint32_hton(boost::uint32_t val)
 	{
 		return be32toh(val);
 	}
 
-	uint32_t	uint32_ntoh(uint32_t val)
+	boost::uint32_t	uint32_ntoh(boost::uint32_t val)
 	{
 		return be32toh(val);
 	}
 
-	uint64_t	uint64_hton(uint32_t val)
+	boost::uint64_t	uint64_hton(boost::uint32_t val)
 	{
 		return be64toh(val);
 	}
 
-	uint64_t	uint64_ntoh(uint32_t val)
+	boost::uint64_t	uint64_ntoh(boost::uint32_t val)
 	{
 		return be64toh(val);
 	}
