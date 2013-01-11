@@ -1,6 +1,9 @@
 #include <muradin/net/endian.h>
-#include <muradin/config/predef.h>
+#include <muradin/platform/predef.h>
 
+#if ( defined(PREDEF_OS_LINUX) || defined(PREDEF_PLATFORM_UNIX) )
+	#include <sys/socket.h>
+#endif
 
 
 
