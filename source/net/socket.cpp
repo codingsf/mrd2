@@ -1,6 +1,7 @@
 #include <muradin/net/socket.h>
 #include <sys/types.h>    // for socklen_t
 #include <sys/socket.h>
+#include <muradin/net/socket_ctl.h>
 
 namespace muradin{
 namespace net{
@@ -43,14 +44,24 @@ namespace net{
 
 	SOCKET_FD socket::accpet(SOCKET_FD listen_fd,endpoint_v4& remote_addr)
 	{
-		INET_ADDR* addr_inet = &addr.address();
+		INET_ADDR* addr_inet = &remote_addr.address();
 		socklen_t len= static_cast<socklen_t>(sizeof(INET_ADDR));
-		return ::accpet4(listen_fd,addr_inet,len, SOCK_NONBLOCK | SOCK_CLOEXEC);
+
+		// accpet4 need Linux kernel 2.6.28
+		//return ::accpet4(listen_fd,addr_inet,len, SOCK_NONBLOCK | SOCK_CLOEXEC);
+		SOCKET_FD fd=::accpet(listen_fd,addr_inet,len);
+		if(fd != -1){
+			int ret=socket_ctl::set_nonblcok(fd,true);
+			ret= socket_ctl::set_cloexec(fd);
+
+			/// FIXME:check ret
+		}
+		return fd;
 	}
 
 	int socket::connect(SOCKET_FD fd,endpoint_v4& remote_addr)
 	{
-		INET_ADDR addr_inet = addr.address();
+		INET_ADDR addr_inet = remote_addr.address();
 		return ::connect(fd,(struct sockaddr*)&addr_inet,static_cast<socklen_t>( sizeof(INET_ADDR) ) );
 	}
 

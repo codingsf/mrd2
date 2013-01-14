@@ -17,7 +17,7 @@ namespace net{
 			k_tcp_close_writ	=0x01,	/* 0x01 close write         */
 			k_tcp_close_both	=0x02	/* 0x02 close read write    */
 		};
-	public::
+	public:
 		socket(SOCKET_FD fd);
 		/// will close FD
 		~socket();
