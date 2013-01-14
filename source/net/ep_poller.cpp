@@ -89,7 +89,7 @@ void	poller_epoll::wait_for_evt(channle_list& active_channels,boost::uint32_t wa
 	int ret = epoll_wait(m_fd,&evts,kMaxPollEvt,static_cast<int>(wait_timeout_ms));
 
 	if (ret == 0){
-		// got nothing,and timeout
+		// got nothing. timeout,interrupted
 	}else(ret > 0){
 		for (int i = 0; i < ret; ++i){
 			evt_channle* channel = static_cast<evt_channle*>(evts[i].data.ptr);
