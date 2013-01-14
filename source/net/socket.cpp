@@ -48,8 +48,10 @@ namespace net{
 		socklen_t len= static_cast<socklen_t>(sizeof(INET_ADDR));
 
 		// accpet4 need Linux kernel 2.6.28
-		//return ::accpet4(listen_fd,addr_inet,len, SOCK_NONBLOCK | SOCK_CLOEXEC);
-		SOCKET_FD fd=::accpet(listen_fd,addr_inet,len);
+		return ::accept4(listen_fd,(struct sockaddr*)addr_inet,&len, SOCK_NONBLOCK | SOCK_CLOEXEC);
+		
+		/*
+		SOCKET_FD fd=::accept(listen_fd,addr_inet,len);
 		if(fd != -1){
 			int ret=socket_ctl::set_nonblcok(fd,true);
 			ret= socket_ctl::set_cloexec(fd);
@@ -57,6 +59,7 @@ namespace net{
 			/// FIXME:check ret
 		}
 		return fd;
+		*/
 	}
 
 	int socket::connect(SOCKET_FD fd,endpoint_v4& remote_addr)
