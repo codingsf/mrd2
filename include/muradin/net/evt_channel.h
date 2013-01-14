@@ -26,6 +26,11 @@ namespace muradin {
 			void	set_read_cb(const evt_notify_functor& func){m_read_cb = func;};
 			void	set_write_cb(const evt_notify_functor& func){m_write_cb = func;};
 
+			/// for evt-poller
+			void	save_evt_status(int status){m_last_evt_status=status;};
+			
+			int		evt_status()const {return m_last_evt_status;};
+
 			SOCKET_FD fd(){return m_fd;};
 		private:
 			void	process_work();

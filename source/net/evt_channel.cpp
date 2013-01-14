@@ -24,7 +24,7 @@ namespace net{
 			}
 			void	evt_channle::remove_from_service()
 			{
-				//
+				m_service
 			}
 			void	evt_channle::subscrib_read_evt()
 			{
