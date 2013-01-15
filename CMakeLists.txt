@@ -11,17 +11,19 @@ set(CXX_FLAGS
  # -DVALGRIND
  # -DMUDUO_STD_STRING
  -D_FILE_OFFSET_BITS=64
- -Wall
- -Wextra
- -Werror
- -Wconversion
- -Wno-unused-parameter
- -Wold-style-cast
- -Woverloaded-virtual
- -Wpointer-arith
- -Wshadow
- -Wwrite-strings
- -march=native
+ 
+ #-Wall
+ #-Wextra
+ #-Werror
+ #-Wconversion
+ #-Wno-unused-parameter
+ #-Wold-style-cast
+ #-Woverloaded-virtual
+ #-Wpointer-arith
+ #-Wshadow
+ #-Wwrite-strings
+ #-march=native
+
  # -MMD
  # -std=c++0x
  -rdynamic
