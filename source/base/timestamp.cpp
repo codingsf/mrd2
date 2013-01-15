@@ -15,7 +15,7 @@
 #endif 
 
 
-BOOST_STATIC_ASSERT( sizeof(muradin::base::timestamp) == sizeof(int64_t) );
+BOOST_STATIC_ASSERT( sizeof(muradin::base::timestamp) == sizeof(boost::int64_t) );
 
 namespace muradin
 {
@@ -23,7 +23,7 @@ namespace base
 {
 
 
-timestamp::timestamp(int64_t microseconds)
+timestamp::timestamp(boost::int64_t microseconds)
   : microSecondsSinceEpoch_(microseconds)
 {
 }
@@ -31,13 +31,13 @@ timestamp::timestamp(int64_t microseconds)
 std::string timestamp::to_string() const
 {
   char buf[32] = {0};
-  int64_t seconds = microSecondsSinceEpoch_ / kMicroSecondsPerSecond;
-  int64_t microseconds = microSecondsSinceEpoch_ % kMicroSecondsPerSecond;
+  boost::int64_t seconds = microSecondsSinceEpoch_ / kMicroSecondsPerSecond;
+  boost::int64_t microseconds = microSecondsSinceEpoch_ % kMicroSecondsPerSecond;
 
 #if (defined(PREDEF_COMPILER_VISUALC)) 
   snprintf(buf, sizeof(buf)-1, "%I64d.%06I64d", seconds, microseconds);
 #else
-  BOOST_STATIC_ASSERT(sizeof(long long int) == sizeof(int64_t));
+  BOOST_STATIC_ASSERT(sizeof(long long int) == sizeof(boost::int64_t));
   snprintf(buf, sizeof(buf)-1, "%lld.%06lld", (long long int)seconds, (long long int)microseconds);
 #endif // _ENV_MSVCPP
 
@@ -51,12 +51,12 @@ std::string timestamp::to_formatted_string() const
 #if (defined(PREDEF_COMPILER_VISUALC)) 
 
 	__time64_t seconds = static_cast<__time64_t>(microSecondsSinceEpoch_/kMicroSecondsPerSecond);
-	int microseconds = static_cast<int>(microSecondsSinceEpoch_ % kMicroSecondsPerSecond);
+	boost::int32_t microseconds = static_cast<boost::int32_t>(microSecondsSinceEpoch_ % kMicroSecondsPerSecond);
 
 	_gmtime64_s(&tm_time,&seconds);
 #else
   time_t seconds = static_cast<time_t>(microSecondsSinceEpoch_ / kMicroSecondsPerSecond);
-  int microseconds = static_cast<int>(microSecondsSinceEpoch_ % kMicroSecondsPerSecond);
+  boost::int32_t microseconds = static_cast<boost::int32_t>(microSecondsSinceEpoch_ % kMicroSecondsPerSecond);
   gmtime_r(&seconds, &tm_time);
 #endif // _ENV_MSVCPP
 
@@ -75,12 +75,12 @@ std::string timestamp::to_formatted_string1() const
 #if (defined(PREDEF_COMPILER_VISUALC)) 
 
 	__time64_t seconds = static_cast<__time64_t>(microSecondsSinceEpoch_/kMicroSecondsPerSecond);
-	int microseconds = static_cast<int>(microSecondsSinceEpoch_ % kMicroSecondsPerSecond);
+	boost::int32_t microseconds = static_cast<boost::int32_t>(microSecondsSinceEpoch_ % kMicroSecondsPerSecond);
 
 	_gmtime64_s(&tm_time,&seconds);
 #else
 	time_t seconds = static_cast<time_t>(microSecondsSinceEpoch_ / kMicroSecondsPerSecond);
-	int microseconds = static_cast<int>(microSecondsSinceEpoch_ % kMicroSecondsPerSecond);
+	boost::int32_t microseconds = static_cast<boost::int32_t>(microSecondsSinceEpoch_ % kMicroSecondsPerSecond);
 	gmtime_r(&seconds, &tm_time);
 #endif // _ENV_MSVCPP
 
@@ -95,14 +95,14 @@ std::string timestamp::to_formatted_string1() const
 timestamp timestamp::now()
 {
 #if (defined(PREDEF_COMPILER_VISUALC)) 
-	int64_t seconds = 0;
+	boost::int64_t seconds = 0;
 	_time64( &seconds );
     
 	return timestamp(seconds*kMicroSecondsPerSecond);
 #else
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
-	int64_t seconds = tv.tv_sec;
+	boost::int64_t seconds = tv.tv_sec;
 	return timestamp(seconds * kMicroSecondsPerSecond + tv.tv_usec);
 #endif // _ENV_MSVCPP
 }

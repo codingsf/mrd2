@@ -5,9 +5,10 @@
 #define MURADIN_BASE_TIMESTAMP_H__
 
 #include <muradin/platform/predef.h>
-#include <muradin/config/integer_define.h>
+
 #include <string>
 #include <boost/operators.hpp>
+#include <boost/cstdint.hpp>
 
 #if (defined(PREDEF_COMPILER_VISUALC)) 
 #include <time.h>
@@ -67,10 +68,10 @@ public:
 	static timestamp now();
 	static timestamp invalid();
 
-	static const int kMicroSecondsPerSecond = 1000 * 1000;
+	static const boost::int32_t kMicroSecondsPerSecond = 1000 * 1000;
 
 private:
-	int64_t microSecondsSinceEpoch_;
+	boost::int64_t microSecondsSinceEpoch_;
 };
 
 inline bool operator<(timestamp lhs, timestamp rhs)
@@ -92,7 +93,7 @@ inline bool operator==(timestamp lhs, timestamp rhs)
 /// resolution for next 100 years.
 inline double time_difference(timestamp high, timestamp low)
 {
-  int64_t diff = high.micro_seconds_since_epoch() - low.micro_seconds_since_epoch();
+  boost::int64_t diff = high.micro_seconds_since_epoch() - low.micro_seconds_since_epoch();
   return static_cast<double>(diff) / timestamp::kMicroSecondsPerSecond;
 }
 
@@ -103,7 +104,7 @@ inline double time_difference(timestamp high, timestamp low)
 ///
 inline timestamp add_time(timestamp tmstamp, double seconds)
 {
-  int64_t delta = static_cast<int64_t>(seconds * timestamp::kMicroSecondsPerSecond);
+  boost::int64_t delta = static_cast<int64_t>(seconds * timestamp::kMicroSecondsPerSecond);
   return timestamp(tmstamp.micro_seconds_since_epoch() + delta);
 }
 
