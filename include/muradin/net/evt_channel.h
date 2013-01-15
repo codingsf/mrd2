@@ -13,8 +13,8 @@ namespace muradin {
 		public:
 			typedef	boost::function<void()>		evt_notify_functor;
 		public:
-			evt_channle(SOCKET_FD fd,io_service& ios);
-			~evt_channle();
+			evt_channel(SOCKET_FD fd,io_service& ios);
+			~evt_channel();
 			
 			void	join_to_service();
 			void	remove_from_service();

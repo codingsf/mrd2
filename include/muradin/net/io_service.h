@@ -16,16 +16,16 @@
 namespace muradin{
 namespace net{
 
-	class io_services:boost::noncopyable
+	class io_service:boost::noncopyable
 	{
 		typedef	boost::function<void()>		task;
 		typedef std::vector<task>			task_list;
-		typedef std::vector<evt_channle*>	channel_list;
+		typedef std::vector<evt_channel*>	channel_list;
 		typedef boost::mutex 				mutex_type;
 		typedef boost::unique_lock<mutex_type>	lock_type;
 	public:
-		io_services();
-		~io_services();
+		io_service();
+		~io_service();
 
 		/// main loop
 		void	loop();
@@ -34,13 +34,13 @@ namespace net{
 		void	exit();
 
 		/// add new channel 
-		void	add_channle(evt_channle* channel);
+		void	add_channel(evt_channle* channel);
 
 		/// remove a channel
-		void	del_channle(evt_channle* channel);
+		void	del_channel(evt_channle* channel);
 
 		/// update a channel for subcrib event
-		void	update_channle(evt_channle* channel);
+		void	update_channel(evt_channle* channel);
 
 		/// run task
 		/// if call from same thread as main loop,run immediately.otherwise
@@ -72,7 +72,7 @@ namespace net{
 		void	on_read();
 		void	week_me_up();
 		/// wait for event 
-		void	wait_channle(channel_list& saver,boost::uint32_t timeout_ms);
+		void	wait_channel(channel_list& saver,boost::uint32_t timeout_ms);
 	private:
 		const boost::thread::id 		m_loop_owner_id;
 		boost::scoped_ptr<poller_epoll>	m_poller;

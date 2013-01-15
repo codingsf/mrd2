@@ -11,7 +11,7 @@ namespace net{
 
 	class poller_epoll
 	{
-		typedef std::vector<evt_channle*>				channel_list;
+		typedef std::vector<evt_channel*>				channel_list;
 		typedef std::map<SOCKET_FD,evt_channle*>		channel_map;
 		typedef int							POLL_FD;
 	public:

@@ -7,7 +7,7 @@
 namespace muradin{
 namespace net{
 
-	evt_channle::evt_channle(SOCKET_FD fd,io_service& ios)
+	evt_channel::evt_channel(SOCKET_FD fd,io_service& ios)
 	:m_fd(fd),
 	m_last_evt_status(0),
 	m_service(ios),
@@ -18,23 +18,23 @@ namespace net{
 	{
 		//
 	}
-	evt_channle::~evt_channle()
+	evt_channel::~evt_channel()
 	{
 		//
 	}
-	void	evt_channle::join_to_service()
+	void	evt_channel::join_to_service()
 	{
 		assert(m_service.check_this_loop());
 		m_service.add_channle(this);
 	}
-	void	evt_channle::remove_from_service()
+	void	evt_channel::remove_from_service()
 	{
 		assert(m_service.check_this_loop());
 		m_service.del_channle(this);
 	}
 
 
-	void	evt_channle::enable_read(bool enable)
+	void	evt_channel::enable_read(bool enable)
 	{
 		assert(m_service.check_this_loop());
 		if(enable){
@@ -44,7 +44,7 @@ namespace net{
 		}
 		m_service.update_channle(this);
 	}
-	void	evt_channle::enable_write(bool enable)
+	void	evt_channel::enable_write(bool enable)
 	{
 		assert(m_service.check_this_loop());
 		if(enable){
@@ -56,7 +56,7 @@ namespace net{
 	}
 	
 
-	void	evt_channle::process_work()
+	void	evt_channel::process_work()
 	{
 		
 		if((m_last_evt_status & EPOLLHUP) && !(m_last_evt_status & EPOLLIN)){
