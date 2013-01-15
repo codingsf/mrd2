@@ -48,12 +48,12 @@ namespace net{
 	void	io_service::add_channel(evt_channel* channel)
 	{
 		assert(check_this_loop() == true);
-		m_poller->add_channle(channel);
+		m_poller->add_channel(channel);
 	}
 	void	io_service::del_channel(evt_channel* channel)
 	{
 		assert(check_this_loop() == true);
-		m_poller->del_channle(channel);	
+		m_poller->del_channel(channel);	
 	}
 	void	io_service::update_channel(evt_channel* channel)
 	{
@@ -110,7 +110,7 @@ namespace net{
 			m_pending_tasks.swap(to_run);
 		}
 
-		for(size_t i=0;i<to_run.szie();++i){
+		for(size_t i=0;i<to_run.size();++i){
 			to_run[i]();
 		}
 		m_running_pending_tasks=false;
@@ -128,7 +128,7 @@ namespace net{
 		static char buff[read_bytes]={0};
 		::read(m_weekup_fd,buff,read_bytes);
 	}
-	void	io_service::wait_channel(channle_list& saver,boost::uint32_t timeout_ms)
+	void	io_service::wait_channel(channel_list& saver,boost::uint32_t timeout_ms)
 	{
 		/// blocking untill:
 		///   - get IO-Event form OS

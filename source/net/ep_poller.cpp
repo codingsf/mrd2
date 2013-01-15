@@ -86,7 +86,7 @@ void	poller_epoll::update_evt_code(evt_channel* channel)
 
 }
 
-void	poller_epoll::wait_for_evt(channle_list& active_channels,boost::uint32_t wait_timeout_ms)
+void	poller_epoll::wait_for_evt(channel_list& active_channels,boost::uint32_t wait_timeout_ms)
 {
 	struct epoll_event evts[kMaxPollEvt];
 	::memset(&evts,0x0,sizeof(evts));

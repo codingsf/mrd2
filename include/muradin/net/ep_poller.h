@@ -26,7 +26,7 @@ namespace net{
 		void	update_evt_code(evt_channel* channel);
 
 
-		void	wait_for_evt(channle_list& active_channels,boost::uint32_t wait_timeout_ms);
+		void	wait_for_evt(channel_list& active_channels,boost::uint32_t wait_timeout_ms);
 	private:
 		evt_channel*	find_channel(SOCKET_FD fd);
 	private:
