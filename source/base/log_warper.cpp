@@ -13,7 +13,7 @@ namespace base
 OutputFunc	g_out_put_func=NULL;
 FlushFunc	g_flush_func=NULL;
 
-static unsigned int g_log_head_padding=100;
+static size_t g_log_head_padding=100;
 static loging_level	g_log_level=ll_debug;
 static const	std::string	g_crlf="\r\n";
 static const	std::string g_str_spliter="|";
@@ -113,14 +113,15 @@ public:
 	}
 	virtual	void		finish()
 	{
-		if(log_levl_ >= g_log_level){
-			if(g_out_put_func)
-				g_out_put_func(ostream_.str ().c_str (),ostream_.str ().length ());
-			else
-				default_writ_func(ostream_.str ().c_str (),ostream_.str ().length ());
-		}
+		std::string out = ostream_.str ();
 		ostream_.clear();
 		ostream_.str ("");
+		if(log_levl_ >= g_log_level){
+			if(g_out_put_func)
+				g_out_put_func(out.c_str (),(int)out.length ());
+			else
+				default_writ_func(out.c_str (),(int)out.length ());
+		}
 	}
 
 	virtual void		flush()
@@ -135,7 +136,7 @@ private:
 	void	pading_space()
 	{
 		if(ostream_.str ().length() < g_log_head_padding){
-			unsigned int padding_size= g_log_head_padding - ostream_.str ().length();
+			size_t padding_size= g_log_head_padding - ostream_.str ().length();
 			for (;padding_size>0;padding_size--){
 				ostream_<<" ";
 			}
