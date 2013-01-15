@@ -21,7 +21,7 @@ const	char*	LOG_LVL_NAME[ll_end_palce_]=
 {"DEBUG ","INFO  ","WARN  ","ERROR ","FATAL "};
 
 
-void default_writ_func(const char* msg, int len)
+void default_writ_func(const char* msg, size_t len)
 {
 	std::cout<<msg;
 }
@@ -118,9 +118,9 @@ public:
 		ostream_.str ("");
 		if(log_levl_ >= g_log_level){
 			if(g_out_put_func)
-				g_out_put_func(out.c_str (),(int)out.length ());
+				g_out_put_func(out.c_str (),out.length ());
 			else
-				default_writ_func(out.c_str (),(int)out.length ());
+				default_writ_func(out.c_str (),out.length ());
 		}
 	}
 
