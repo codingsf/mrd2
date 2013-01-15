@@ -63,10 +63,7 @@ private:
 #define		LOG_FATL					(muradin::base::log_warper(muradin::base::ll_fatal_err,__FILE__,__FUNCTION__,__LINE__))
 
 /// end of line
-static const char* EOL()
-{
-	return "\r\n";
-}
+static const char* EOL();
 
 
 #endif // MURADIN_BASE_LOG_WAPPER_H__

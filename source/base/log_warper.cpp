@@ -219,3 +219,10 @@ void log_warper::setFlush(FlushFunc  func)
 }
 }//base
 }//muradin
+
+
+/// end of line
+const char* EOL();
+{
+	return "\r\n";
+}
