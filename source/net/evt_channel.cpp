@@ -1,5 +1,6 @@
 #include <muradin/net/evt_channel.h>
 #include <muradin/base/log_waper.h>
+#include <muradin/net/io_service.h>
 
 #include <sys/epoll.h>
 #include <assert.h>

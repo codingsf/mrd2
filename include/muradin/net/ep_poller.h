@@ -5,6 +5,7 @@
 #include <muradin/net/socket_fd.h>
 
 #include <vector>
+#include <map>
 
 namespace muradin{
 namespace net{
