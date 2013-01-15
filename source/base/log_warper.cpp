@@ -113,6 +113,7 @@ public:
 	}
 	virtual	void		finish()
 	{
+		ostream_<<EOL();
 		std::string out = ostream_.str ();
 		ostream_.clear();
 		ostream_.str ("");
