@@ -34,13 +34,13 @@ namespace net{
 		void	exit();
 
 		/// add new channel 
-		void	add_channel(evt_channle* channel);
+		void	add_channel(evt_channel* channel);
 
 		/// remove a channel
-		void	del_channel(evt_channle* channel);
+		void	del_channel(evt_channel* channel);
 
 		/// update a channel for subcrib event
-		void	update_channel(evt_channle* channel);
+		void	update_channel(evt_channel* channel);
 
 		/// run task
 		/// if call from same thread as main loop,run immediately.otherwise
@@ -58,8 +58,8 @@ namespace net{
 		bool	check_this_loop();
 		//
 		/*
-		void	add_channle(evt_channle* channle);
-		void	remove_channle(evt_channle* evt_channle);
+		void	add_channle(evt_channel* channle);
+		void	remove_channle(evt_channel* evt_channel);
 		*/
 	protected:
 		//
@@ -77,7 +77,7 @@ namespace net{
 		const boost::thread::id 		m_loop_owner_id;
 		boost::scoped_ptr<poller_epoll>	m_poller;
 		SOCKET_FD 						m_weekup_fd;
-		evt_channle						m_self_channel;
+		evt_channel						m_self_channel;
 		bool							m_running_pending_tasks;
 		bool							m_exit;
 

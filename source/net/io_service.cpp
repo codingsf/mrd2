@@ -10,7 +10,7 @@ namespace muradin{
 namespace net{
 	io_service::io_service()
 	:m_loop_owner_id(boost::this_thread::get_id()),
-	m_poller(new poller_epoll())
+	m_poller(new poller_epoll()),
 	m_weekup_fd(socket::create()),	
 	m_self_channel(m_weekup_fd,*this),		
 	m_running_pending_tasks(false),
@@ -32,33 +32,33 @@ namespace net{
 		channel_list	active_channels;
 		static const boost::uint32_t poll_timout_ms=1000;
 		while(m_exit){
-			active_channles.clear();
+			active_channels.clear();
 
 			wait_channel(active_channels,poll_timout_ms);
 			
 			// dispath io-event first
-			for (int i = 0; i < active_channles.size(); ++i){
-				active_channles[i]->process_work();
+			for (int i = 0; i < active_channels.size(); ++i){
+				active_channels[i]->process_work();
 			}
 			// run tasks
 			run_pending_task();
 		}
 	}
 
-	void	io_service::add_channel(evt_channle* channel)
+	void	io_service::add_channel(evt_channel* channel)
 	{
 		assert(check_this_loop() == true);
 		m_poller->add_channle(channel);
 	}
-	void	io_service::del_channel(evt_channle* channel)
+	void	io_service::del_channel(evt_channel* channel)
 	{
 		assert(check_this_loop() == true);
 		m_poller->del_channle(channel);	
 	}
-	void	io_service::update_channel(evt_channle* channel)
+	void	io_service::update_channel(evt_channel* channel)
 	{
 		assert(check_this_loop() == true);
-		m_poller->update_channle(channel);
+		m_poller->update_evt_code(channel);
 	}
 
 	void	io_service::run_task(const task& func)
@@ -103,9 +103,9 @@ namespace net{
 	void	io_service::run_pending_task()
 	{
 		m_running_pending_tasks=true;
-		{
-			task_list to_run;
+		task_list to_run;
 
+		{
 			lock_type	lock(m_mutex);
 			m_pending_tasks.swap(to_run);
 		}

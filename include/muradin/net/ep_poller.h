@@ -13,22 +13,22 @@ namespace net{
 	class poller_epoll
 	{
 		typedef std::vector<evt_channel*>				channel_list;
-		typedef std::map<SOCKET_FD,evt_channle*>		channel_map;
+		typedef std::map<SOCKET_FD,evt_channel*>		channel_map;
 		typedef int							POLL_FD;
 	public:
 		poller_epoll();
 		~poller_epoll();
 	
-		void	add_channel(evt_channle* channel);
-		void	del_channle(evt_channle* channel);
+		void	add_channel(evt_channel* channel);
+		void	del_channel(evt_channel* channel);
 
 		/// update events-code
-		void	update_evt_code(evt_channle* channel);
+		void	update_evt_code(evt_channel* channel);
 
 
 		void	wait_for_evt(channle_list& active_channels,boost::uint32_t wait_timeout_ms);
 	private:
-		evt_channle*	find_channel(SOCKET_FD fd);
+		evt_channel*	find_channel(SOCKET_FD fd);
 	private:
 		enum  { kMaxPollEvt=256 };
 		POLL_FD			m_fd;

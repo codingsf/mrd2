@@ -27,16 +27,16 @@ poller_epoll::~poller_epoll()
 	m_fd=-1;
 }
 
-evt_channle*	poller_epoll::find_channel(SOCKET_FD fd)
+evt_channel*	poller_epoll::find_channel(SOCKET_FD fd)
 {
-	evt_channle* found_ptr=NULL;
+	evt_channel* found_ptr=NULL;
 	channel_map::iterator it=m_channel_map.find(fd);
 	if(it != m_channel_map.end())
 		found_ptr= &*it;
 	return found_ptr;
 }	
 
-void	poller_epoll::add_channel(evt_channle* channel)
+void	poller_epoll::add_channel(evt_channel* channel)
 {
 	assert( NULL == find_channel(channel.fd()));
 
@@ -54,7 +54,7 @@ void	poller_epoll::add_channel(evt_channle* channel)
 	}
 }
 
-void	poller_epoll::del_channle(evt_channle* channel)
+void	poller_epoll::del_channel(evt_channel* channel)
 {
 	assert( NULL != find_channel(channel.fd()));
 
@@ -68,7 +68,7 @@ void	poller_epoll::del_channle(evt_channle* channel)
 	}
 }
 
-void	poller_epoll::update_evt_code(evt_channle* channel)
+void	poller_epoll::update_evt_code(evt_channel* channel)
 {
 	assert( NULL != find_channel(channel.fd()));
 
@@ -96,7 +96,7 @@ void	poller_epoll::wait_for_evt(channle_list& active_channels,boost::uint32_t wa
 		// got nothing. timeout,interrupted
 	}else(ret > 0){
 		for (int i = 0; i < ret; ++i){
-			evt_channle* channel = static_cast<evt_channle*>(evts[i].data.ptr);
+			evt_channel* channel = static_cast<evt_channel*>(evts[i].data.ptr);
 			assert( NULL != find_channel(channel.fd()));
 			channel.save_evt_status( evts[i].events );
 			active_channels.push_back(channel);
