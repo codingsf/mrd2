@@ -18,8 +18,9 @@ namespace muradin {
 			
 			void	join_to_service();
 			void	remove_from_service();
-			void	subscrib_read_evt();
-			void	subscrib_write_evt();
+			void	enable_read(bool enable);
+			void	enable_write(bool enable);
+
 
 			void	set_error_cb(const evt_notify_functor& func){m_error_cb = func;};
 			void	set_close_cb(const evt_notify_functor& func){m_close_cb = func;};

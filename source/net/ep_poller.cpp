@@ -1,4 +1,5 @@
-#include <muradin/ep_poller.h>
+#include <muradin/net/ep_poller.h>
+#include <muradin/base/log_waper.h>
 
 #include <sys/epoll.h>
 
@@ -49,6 +50,7 @@ void	poller_epoll::add_channel(evt_channle* channel)
 		m_channel_map.insert(std::paire(channel.fd(),channel);
 	}else{
 		// got error
+		LOG_EROR.stream()<<"epoll_ctl fail,errno:"<< errno<<EOL();
 	}
 }
 
@@ -62,6 +64,7 @@ void	poller_epoll::del_channle(evt_channle* channel)
 		m_channel_map.earse(channel.fd());
 	}else{
 		// got error
+		LOG_EROR.stream()<<"epoll_ctl fail,errno:"<< errno<<EOL();
 	}
 }
 
@@ -78,6 +81,7 @@ void	poller_epoll::update_evt_code(evt_channle* channel)
 		// SUCCESS
 	}else{
 		// got error
+		LOG_EROR.stream()<<"epoll_ctl fail,errno:"<< errno<<EOL();
 	}
 
 }
@@ -99,6 +103,7 @@ void	poller_epoll::wait_for_evt(channle_list& active_channels,boost::uint32_t wa
 		}
 	}else{
 		// got error
+		LOG_EROR.stream()<<"epoll_wait fail,errno:"<< errno<<EOL();
 	}
 }
 

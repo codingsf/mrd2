@@ -1,58 +1,83 @@
 #include <muradin/net/evt_channel.h>
+#include <muradin/base/log_waper.h>
+
+#include <sys/epoll.h>
+#include <assert.h>
 
 namespace muradin{
 namespace net{
 
-			evt_channle::evt_channle(SOCKET_FD fd,io_service& ios)
-			:m_fd(fd),
-			m_last_evt_status(0),
-			m_service(ios),
-			m_error_cb(NULL),
-			m_close_cb(NULL),
-			m_read_cb(NULL),
-			m_write_cb(NULL)
-			{
-				//
-			}
-			evt_channle::~evt_channle()
-			{
-				//
-			}
-			void	evt_channle::join_to_service()
-			{
-				//
-			}
-			void	evt_channle::remove_from_service()
-			{
-				m_service.
-			}
-			void	evt_channle::subscrib_read_evt()
-			{
-				//
-			}
-			void	evt_channle::subscrib_write_evt()
-			{
-				//
-			}
-			void	evt_channle::process_work()
-			{
-				switch(m_last_evt_status){
-				case 0:
-					if(m_error_cb) m_error_cb();
-					break;
-				case 1:
-					if(m_close_cb) m_close_cb();
-					break;
-				case 2:
-					if(m_read_cb) m_read_cb();
-					break;
-				case 3:
-					if(m_write_cb) m_write_cb();
-					break;
-					default:
-					//
-				}
-			}
+	evt_channle::evt_channle(SOCKET_FD fd,io_service& ios)
+	:m_fd(fd),
+	m_last_evt_status(0),
+	m_service(ios),
+	m_error_cb(NULL),
+	m_close_cb(NULL),
+	m_read_cb(NULL),
+	m_write_cb(NULL)
+	{
+		//
+	}
+	evt_channle::~evt_channle()
+	{
+		//
+	}
+	void	evt_channle::join_to_service()
+	{
+		assert(m_service.check_this_loop());
+		m_service.add_channle(this);
+	}
+	void	evt_channle::remove_from_service()
+	{
+		assert(m_service.check_this_loop());
+		m_service.del_channle(this);
+	}
+
+
+	void	evt_channle::enable_read(bool enable)
+	{
+		assert(m_service.check_this_loop());
+		if(enable){
+			m_last_evt_status |= (EPOLLIN|EPOLLHUP|EPOLLPRI);
+		}else{
+			m_last_evt_status &= (EPOLLIN|EPOLLHUP|EPOLLPRI);
+		}
+		m_service.update_channle(this);
+	}
+	void	evt_channle::enable_write(bool enable)
+	{
+		assert(m_service.check_this_loop());
+		if(enable){
+			m_last_evt_status |=EPOLLOUT;
+		}else{
+			m_last_evt_status &=EPOLLOUT;
+		}
+		m_service.update_channle(this);
+	}
+	
+
+	void	evt_channle::process_work()
+	{
+		
+		if((m_last_evt_status & EPOLLHUP) && !(m_last_evt_status & EPOLLIN)){
+			LOG_INFO.stream()<<"EPOLLRDHUP"<<EOL();
+			if(m_close_cb) m_close_cb();
+		}
+		if( m_last_evt_status & EPOLLERR ){
+			LOG_EROR.stream()<<"EPOLLERR,errno:"<< errno<<EOL();
+			if(m_error_cb) m_error_cb();
+		}
+
+		if( m_last_evt_status & (EPOLLIN | EPOLLPRI | EPOLLRDHUP) ){
+			LOG_INFO.stream()<<"EPOLLIN | EPOLLPRI | EPOLLRDHUP"<<EOL();
+			if(m_read_cb) m_read_cb();
+		}
+
+		if( m_last_evt_status & EPOLLOUT ){
+			LOG_INFO.stream()<<"EPOLLOUT"<<EOL();
+			if(m_write_cb) m_write_cb();
+		}
+	}
 
 }
 }
