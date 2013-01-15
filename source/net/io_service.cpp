@@ -135,7 +135,7 @@ namespace net{
 		///   - timeout
 		///   - week_me_up has been called.
 
-		m_poller.wait_for_evt(saver,timeout_ms);
+		m_poller->wait_for_evt(saver,timeout_ms);
 	}
 	void	io_service::exit()
 	{

@@ -10,10 +10,12 @@ namespace muradin {
 namespace net{
 
 	class io_service;
-	
+
 	class evt_channel{
 	public:
 		typedef	boost::function<void()>		evt_notify_functor;
+
+		friend class io_service;
 	public:
 		evt_channel(SOCKET_FD fd,io_service& ios);
 		~evt_channel();
