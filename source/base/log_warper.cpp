@@ -113,7 +113,7 @@ public:
 	}
 	virtual	void		finish()
 	{
-		ostream_<<EOL();
+		ostream_<<ENDLN;
 		std::string out = ostream_.str ();
 		ostream_.clear();
 		ostream_.str ("");
@@ -220,10 +220,3 @@ void log_warper::setFlush(FlushFunc  func)
 }
 }//base
 }//muradin
-
-
-/// end of line
-const char* EOL();
-{
-	return "\r\n";
-}
