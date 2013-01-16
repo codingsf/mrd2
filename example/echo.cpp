@@ -31,5 +31,5 @@ int main(int nagrv,char** argc)
 	serv.set_conn_cb(on_conn);
 	serv.set_msg_cb(on_msg);
 	serv.set_msg_complete_cb(on_msg_complete);
-	serv.run();
+	serv.start();
 }
