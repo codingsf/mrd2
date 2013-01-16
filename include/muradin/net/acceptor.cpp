@@ -9,10 +9,10 @@ namespace net{
 	m_addr(local_addr),
 	m_channel(m_socket.fd(),m_service)
 	{
-		assert(m_socket > 0);
+		assert(m_socket.fd() > 0);
 
-		socket::bind(m_socket,m_addr); /// FIXME::check
-		m_channel.set_read_cb(boost::bind(&io_service::on_read,this));
+		socket::bind(m_socket.fd(),m_addr); /// FIXME::check
+		m_channel.set_read_cb(boost::bind(&acceptor::on_read,this));
 		m_service.add_channel(&m_channel);
 	}
 
