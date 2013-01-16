@@ -1,14 +1,17 @@
 #include <muradin/net/connection.h>
-#include <muradin/base/log_waper.h>
+#include <muradin/net/io_service.h>
+#include <muradin/base/log_warper.h>
 
 #include <errno.h>
+
+#include <boost/bind.hpp>
 
 namespace muradin{
 namespace net{
 
 
 
-	connection::connection(io_service& ios,SOCKET_FD fd,const net_address& peer_addr)
+	connection::connection(io_service& ios,SOCKET_FD fd,const endpoint_v4& peer_addr)
 	:m_socket(fd),
 	m_service(ios),
 	m_channle(fd,ios),
@@ -27,7 +30,7 @@ namespace net{
 	}
 	connection::~connection()
 	{
-		LOG_INFO.stream()<<"connection >>>>>> d-tor "<<EOL();
+		LOG_INFO.stream()<<"connection >>>>>> d-tor "<<ENDLN;
 	}
 
 	void	connection::tcp_enstablished()
@@ -35,11 +38,11 @@ namespace net{
 		m_service.add_channel(&m_channle);
 		m_channle.enable_read(true);
 		m_conn_status=kConnected;
-		m_conn_cb();
+		m_conn_cb(shared_from_this());
 	}
 	net::buffer connection::cached_msg()
 	{
-		return net::buffer(m_read_cache.rd_ptr(),m_read_cache.readablebytes());
+		return net::buffer(m_read_cache.rd_ptr(),m_read_cache.readable_bytes());
 	}
 	void	connection::write(const net::buffer& data)
 	{
@@ -52,50 +55,34 @@ namespace net{
 		//shutdown();
 	}
 
-	/// set callback (error)
-	void	connection::reg_error_cb()
-	{
-		//
-	}
-	/// set callback (connection closed)
-	void	connection::reg_close_cb()
-	{
-		//
-	}
-	/// set callback (msg has read)
-	void	connection::reg_msg_cb()
-	{
-		//
-	}
-
 	void		connection::handle_read()
 	{
 		//m_socket->read();
-		LOG_INFO.stream()<<"handle_read "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port()<<EOL();
+		LOG_INFO.stream()<<"handle_read "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port()<<ENDLN;
 		// call m_msg_cb;
 	}
 	/// fd writeable
 	void		connection::handle_write()
 	{
 		// m_socket->write();
-		LOG_INFO.stream()<<"handle_write "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port()<<EOL();
+		LOG_INFO.stream()<<"handle_write "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port()<<ENDLN;
 		/// write success call m_msg_complete_cb
 	}
 	/// handle sys-error
 	void		connection::handle_error()
 	{
 		//
-		LOG_INFO.stream()<<"handle_error "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port()<<EOL();
+		LOG_INFO.stream()<<"handle_error "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port()<<ENDLN;
 		/// write success call errcb
 	}
 	/// network closed by peer
 	void		connection::handle_close()
 	{
 		// close passivity
-		LOG_INFO.stream()<<"handle_close "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port()<<EOL();
+		LOG_INFO.stream()<<"handle_close "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port()<<ENDLN;
 		m_conn_status=kDisconnect;
-		m_conn_cb();
-		m_close_cb(); 
+		m_conn_cb(shared_from_this());
+		m_close_cb(shared_from_this()); 
 	}
 }
 }

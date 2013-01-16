@@ -10,12 +10,14 @@
 #include <muradin/net/socket_fd.h>
 #include <muradin/net/socket.h>
 #include <muradin/net/evt_channel.h>
+#include <muradin/net/net_address.h>
 #include <muradin/net/user_callback.h>
+
 
 namespace muradin{
 namespace net{
 	
-	class connection : boost::enable_shared_from_this
+	class connection :public boost::enable_shared_from_this<connection>
 	{
 	public:
 
@@ -23,13 +25,13 @@ namespace net{
 			kDisconnect=0,kConnected=1,kInConnec=2,kInDisconnect=3
 		};
 
-		connection(io_service& ios,SOCKET_FD fd,const net_address& peer_addr);
+		connection(io_service& ios,SOCKET_FD fd,const endpoint_v4& peer_addr);
 		~connection();
 		conn_stat conn_status()const{return m_conn_status;};
 		void	tcp_enstablished();
 		net::buffer cached_msg();
 
-		SOCKET_FD fd()const{return m_socket.fd();};
+		SOCKET_FD fd(){return m_socket.fd();};
 		void	write(const net::buffer& data);
 		void	shutdown();
 
@@ -58,7 +60,7 @@ namespace net{
 		evt_channel	m_channle;
 		bytebuffer	m_write_cache;
 		bytebuffer	m_read_cache;
-		net_address	m_peer_address;
+		endpoint_v4	m_peer_address;
 		/// callback 
 		on_connect	m_conn_cb;
 		on_msg 		m_msg_cb;

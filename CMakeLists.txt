@@ -45,14 +45,14 @@ find_package(Boost REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/src)
 
 string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
 message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_TYPE}})
 
-add_subdirectory(source/base)
-add_subdirectory(source/net)
-add_subdirectory(source/platform)
+add_subdirectory(src/muradin/base)
+add_subdirectory(src/muradin/net)
+add_subdirectory(src/muradin/platform)
 
 if(NOT CMAKE_BUILD_NO_EXAMPLES)
   add_subdirectory(example)

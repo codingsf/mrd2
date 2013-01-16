@@ -61,21 +61,21 @@ namespace net{
 	{
 		
 		if((m_last_evt_status & EPOLLHUP) && !(m_last_evt_status & EPOLLIN)){
-			LOG_INFO.stream()<<"EPOLLRDHUP"<<EOL();
+			LOG_INFO.stream()<<"EPOLLRDHUP"<<ENDLN;
 			if(m_close_cb) m_close_cb();
 		}
 		if( m_last_evt_status & EPOLLERR ){
-			LOG_EROR.stream()<<"EPOLLERR,errno:"<< errno<<EOL();
+			LOG_EROR.stream()<<"EPOLLERR,errno:"<< errno<<ENDLN;
 			if(m_error_cb) m_error_cb();
 		}
 
 		if( m_last_evt_status & (EPOLLIN | EPOLLPRI | EPOLLRDHUP) ){
-			LOG_INFO.stream()<<"EPOLLIN | EPOLLPRI | EPOLLRDHUP"<<EOL();
+			LOG_INFO.stream()<<"EPOLLIN | EPOLLPRI | EPOLLRDHUP"<<ENDLN;
 			if(m_read_cb) m_read_cb();
 		}
 
 		if( m_last_evt_status & EPOLLOUT ){
-			LOG_INFO.stream()<<"EPOLLOUT"<<EOL();
+			LOG_INFO.stream()<<"EPOLLOUT"<<ENDLN;
 			if(m_write_cb) m_write_cb();
 		}
 	}
