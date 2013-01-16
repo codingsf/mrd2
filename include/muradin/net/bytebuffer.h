@@ -1,7 +1,7 @@
 
 /**
  * 
- * @file       byte_buffer.h 	
+ * @file       bytebuffer.h 	
  * @author     cj@sunnysec.com.cn
  * @date       2012-10-30
  *  
@@ -11,9 +11,11 @@
 
 #ifndef MURADIN_NET_BYTEBUFFER_H__
 #define MURADIN_NET_BYTEBUFFER_H__
-#include <muradin/config/integer_define.h>
+
 #include <vector>
 #include <string>
+
+#include <boost/cstdint.hpp>
 
 namespace muradin
 {
@@ -55,15 +57,15 @@ public:
 
 	/// 本机字节序转换成指定的字节序
 	/// 本机字节序在特定的平台上始终是固定的
-	static uint16_t byteorder_value_s(bytebuffer::byteorder_t order, uint16_t val);
+	static boost::uint16_t byteorder_value_s(bytebuffer::byteorder_t order, boost::uint16_t val);
 
 	/// 本机字节序转换成指定的字节序
 	/// 本机字节序在特定的平台上始终是固定的
-	static uint32_t byteorder_value_l(bytebuffer::byteorder_t order, uint32_t val);
+	static boost::uint32_t byteorder_value_l(bytebuffer::byteorder_t order, boost::uint32_t val);
 
 	/// 本机字节序转换成指定的字节序
 	/// 本机字节序在特定的平台上始终是固定的
-	static uint64_t byteorder_value_ll(bytebuffer::byteorder_t order, uint64_t val);
+	static boost::uint64_t byteorder_value_ll(bytebuffer::byteorder_t order, boost::uint64_t val);
 
 	bytebuffer(byteorder_t byteorder = bytebuffer::lite_endian, size_t size=2048);
 
@@ -151,52 +153,52 @@ public:
 
 	/// 放入整型数据(如果 byteorder_cov=true 函数会做字节序转换)
 	/// 返回可读数据量
-	size_t		append_uint8(uint8_t val);
+	size_t		append_uint8(boost::uint8_t val);
 
 	/// 放入整型数据(如果 byteorder_cov=true 函数会做字节序转换)
 	/// 返回可读数据量
-	size_t		append_uint16(uint16_t val,bool byteorder_cov=true);
+	size_t		append_uint16(boost::uint16_t val,bool byteorder_cov=true);
 
 	/// 放入整型数据(如果 byteorder_cov=true 函数会做字节序转换)
 	/// 返回可读数据量
-	size_t		append_uint32(uint32_t val,bool byteorder_cov=true);
+	size_t		append_uint32(boost::uint32_t val,bool byteorder_cov=true);
 
 	/// 放入整型数据(如果 byteorder_cov=true 函数会做字节序转换)
 	/// 返回可读数据量
-	size_t		append_uint64(uint64_t val,bool byteorder_cov=true);
+	size_t		append_uint64(boost::uint64_t val,bool byteorder_cov=true);
 
 	/// 读整型数据
 	/// 调用方需要检查可读数据是否足够足
-	uint8_t		read_uint8()const;
+	boost::uint8_t		read_uint8()const;
 
 	/// 读整型数据(如果 byteorder_cov=true 取值跟字节序设置有关)
 	/// 调用方需要检查可读数据是否足够足
-	uint16_t	read_uint16(bool byteorder_cov=true)const;
+	boost::uint16_t	read_uint16(bool byteorder_cov=true)const;
 
 	/// 读整型数据(如果 byteorder_cov=true 取值跟字节序设置有关)
 	/// 调用方需要检查可读数据是否足够足
-	uint32_t	read_uint32(bool byteorder_cov=true)const;
+	boost::uint32_t	read_uint32(bool byteorder_cov=true)const;
 
 	/// 读整型数据(如果 byteorder_cov=true 取值跟字节序设置有关)
 	/// 调用方需要检查可读数据是否足够足
-	uint64_t	read_uint64(bool byteorder_cov=true)const;
+	boost::uint64_t	read_uint64(bool byteorder_cov=true)const;
 
 
 	/// 取出整型数据
 	/// 调用方需要检查可读数据是否足够足
-	uint8_t		retrieve_uint8(){uint8_t val =read_uint8(); discard(sizeof(uint8_t));return val; };
+	boost::uint8_t		retrieve_uint8(){boost::uint8_t val =read_uint8(); discard(sizeof(boost::uint8_t));return val; };
 
 	/// 取出整型数据(如果 byteorder_cov=true 取值跟字节序设置有关)
 	/// 调用方需要检查可读数据是否足够足
-	uint16_t	retrieve_uint16(bool byteorder_cov=true){uint16_t val =read_uint16(byteorder_cov); discard(sizeof(uint16_t));return val; };
+	boost::uint16_t	retrieve_uint16(bool byteorder_cov=true){boost::uint16_t val =read_uint16(byteorder_cov); discard(sizeof(boost::uint16_t));return val; };
 
 	/// 取出整型数据(如果 byteorder_cov=true 取值跟字节序设置有关)
 	/// 调用方需要检查可读数据是否足够足
-	uint32_t	retrieve_uint32(bool byteorder_cov=true){uint32_t val =read_uint32(byteorder_cov); discard(sizeof(uint32_t));return val; };
+	boost::uint32_t	retrieve_uint32(bool byteorder_cov=true){boost::uint32_t val =read_uint32(byteorder_cov); discard(sizeof(boost::uint32_t));return val; };
 
 	/// 取出整型数据(如果 byteorder_cov=true 取值跟字节序设置有关)
 	/// 调用方需要检查可读数据是否足够足
-	uint64_t	retrieve_uint64(bool byteorder_cov=true){uint64_t val =read_uint64(byteorder_cov); discard(sizeof(uint64_t));return val; };
+	boost::uint64_t	retrieve_uint64(bool byteorder_cov=true){boost::uint64_t val =read_uint64(byteorder_cov); discard(sizeof(boost::uint64_t));return val; };
 
 
 	/// 将可读区域当成string取出
