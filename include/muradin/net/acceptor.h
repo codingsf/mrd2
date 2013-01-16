@@ -1,7 +1,7 @@
 #ifndef MURADIN_NET_ACCEPTOR_H__
 #define MURADIN_NET_ACCEPTOR_H__
 
-#include <muradin/net/io_service.h.h>
+#include <muradin/net/io_service.h>
 #include <muradin/net/net_address.h>
 #include <muradin/net/evt_channel.h>
 #include <muradin/net/socket.h>
