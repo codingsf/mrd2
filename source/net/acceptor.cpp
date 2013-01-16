@@ -7,7 +7,7 @@ namespace net{
 	m_socket(socket::create()),
 	m_accept_cb(NULL),
 	m_addr(local_addr),
-	m_channel(m_socket,m_service)
+	m_channel(m_socket.fd(),m_service)
 	{
 		assert(m_socket > 0);
 
@@ -22,7 +22,7 @@ namespace net{
 	
 	void	acceptor::start()
 	{
-		socket::listen(m_socket,256);  /// FIXME::check
+		socket::listen(m_socket.fd(),256);  /// FIXME::check
 		m_channel.enable_read(true);
 	}
 	
