@@ -3,7 +3,7 @@
 
 #include <muradin/net/net_address.h>
 #include <muradin/net/io_service.h>
-#include <muradin/net/cooection.h>
+#include <muradin/net/connection.h>
 #include <muradin/net/socket_fd.h>
 #include <muradin/net/acceptor.h>
 
@@ -34,7 +34,7 @@ namespace muradin{
 		private:
 			io_service&	m_io_service;
 			acceptor	m_acceptor;
-			std::map<connection_ptr>	m_conn_map;
+			std::map<SOCKET_FD,connection_ptr>	m_conn_map;
 			on_connect	m_conn_cb;
 			on_msg 		m_msg_cb;
 			on_msg_complete m_msg_complete_cb;

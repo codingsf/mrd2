@@ -49,7 +49,7 @@ namespace net{
 		/// accept
 		/// return socket FD and set remote_addr if succsee
 		/// return -1 if fail.check errno
-		static	SOCKET_FD accpet(SOCKET_FD listen_fd,endpoint_v4& remote_addr);
+		static	SOCKET_FD accept(SOCKET_FD listen_fd,endpoint_v4& remote_addr);
 
 		/// connect
 		/// return 0 if succsee

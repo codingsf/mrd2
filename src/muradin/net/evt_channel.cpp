@@ -1,5 +1,5 @@
 #include <muradin/net/evt_channel.h>
-#include <muradin/base/log_waper.h>
+#include <muradin/base/log_warper.h>
 #include <muradin/net/io_service.h>
 
 #include <sys/epoll.h>
@@ -26,12 +26,12 @@ namespace net{
 	void	evt_channel::join_to_service()
 	{
 		assert(m_service.check_this_loop());
-		m_service.add_channle(this);
+		m_service.add_channel(this);
 	}
 	void	evt_channel::remove_from_service()
 	{
 		assert(m_service.check_this_loop());
-		m_service.del_channle(this);
+		m_service.del_channel(this);
 	}
 
 
@@ -43,7 +43,7 @@ namespace net{
 		}else{
 			m_last_evt_status &= (EPOLLIN|EPOLLHUP|EPOLLPRI);
 		}
-		m_service.update_channle(this);
+		m_service.update_channel(this);
 	}
 	void	evt_channel::enable_write(bool enable)
 	{
@@ -53,7 +53,7 @@ namespace net{
 		}else{
 			m_last_evt_status &=EPOLLOUT;
 		}
-		m_service.update_channle(this);
+		m_service.update_channel(this);
 	}
 	
 

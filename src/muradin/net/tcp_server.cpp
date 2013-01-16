@@ -1,6 +1,6 @@
 #include <muradin/net/tcp_server.h>
 #include <muradin/net/socket.h>
-#include <muradin/base/log_waper.h>
+#include <muradin/base/log_warper.h>
 
 #include <errno.h>
 
@@ -17,7 +17,7 @@ namespace muradin{
 		m_msg_cb(NULL),
 		m_msg_complete_cb(NULL)
 		{
-			m_acceptor->set_accept_cb(&tcp_server::on_new_conn,this);
+			m_acceptor.set_accept_cb( boost::bind(&tcp_server::on_new_conn,this) );
 		}
 		
 		tcp_server::~tcp_server()
@@ -26,38 +26,38 @@ namespace muradin{
 		}
 		void	tcp_server::start()
 		{
-			m_acceptor->start();
+			m_acceptor.start();
 		}
 		void	tcp_server::stop()
 		{
-			m_acceptor->stop();
+			m_acceptor.stop();
 		}
 
 		void	tcp_server::on_new_conn()
 		{
 			/// get fd form TCP
 			///  do accept,get peer address
-			net_address addr;
+			endpoint_v4 addr;
 			SOCKET_FD fd = socket::accept(m_acceptor.fd(),addr); 
 			if (fd != -1 ){
 				connection_ptr new_conn(new connection(m_io_service,fd,addr));
 
-				new_conn->set_close_cb(boost::bind(&tcp_server::on_remove_conn,this));
+				new_conn->set_close_cb(boost::bind(&tcp_server::on_remove_conn,this,_1));
 				new_conn->set_msg_cb(m_msg_cb);
 				new_conn->set_msg_complete_cb(m_msg_complete_cb);
 				new_conn->set_conn_cb(m_conn_cb);
-
-				LOG_INFO.stream()<<"new conn form :"<< addr.get_ip() << " : " << addr.get_port()<<EOL();
+				m_conn_map[fd]=new_conn;
+				LOG_INFO.stream()<<"new conn form :"<< addr.get_ip() << " : " << addr.get_port()<<ENDLN;
 				/// notify connection
 				new_conn->tcp_enstablished();
 			}else{
 				// got error
-				LOG_EROR.stream()<<"epoll_ctl fail,errno:"<< errno<<EOL();
+				LOG_EROR.stream()<<"epoll_ctl fail,errno:"<< errno<<ENDLN;
 			}
 		}
 		void	tcp_server::on_remove_conn(connection_ptr conn)
 		{
-			m_conn_map.earse(connection_ptr->fd());
+			m_conn_map.erase(conn->fd());
 			/// socket FD closed in connection's d-tor
 		}
 	}

@@ -14,7 +14,6 @@ namespace net{
 	{
 		typedef std::vector<evt_channel*>				channel_list;
 		typedef std::map<SOCKET_FD,evt_channel*>		channel_map;
-		typedef int							POLL_FD;
 	public:
 		poller_epoll();
 		~poller_epoll();
@@ -31,7 +30,7 @@ namespace net{
 		evt_channel*	find_channel(SOCKET_FD fd);
 	private:
 		enum  { kMaxPollEvt=256 };
-		POLL_FD			m_fd;
+		int				m_fd;
 		channel_map		m_channel_map; /* save added channels */
 
 	};

@@ -53,8 +53,9 @@ message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_T
 add_subdirectory(src/muradin/base)
 add_subdirectory(src/muradin/net)
 add_subdirectory(src/muradin/platform)
+add_subdirectory(example)
 
-if(NOT CMAKE_BUILD_NO_EXAMPLES)
-  add_subdirectory(example)
-endif()
+#if(NOT CMAKE_BUILD_NO_EXAMPLES)
+#  add_subdirectory(example)
+#endif()
 

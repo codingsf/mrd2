@@ -42,7 +42,7 @@ namespace net{
 		return ::listen(fd,backlog);
 	}
 
-	SOCKET_FD socket::accpet(SOCKET_FD listen_fd,endpoint_v4& remote_addr)
+	SOCKET_FD socket::accept(SOCKET_FD listen_fd,endpoint_v4& remote_addr)
 	{
 		INET_ADDR* addr_inet = &remote_addr.address();
 		socklen_t len= static_cast<socklen_t>(sizeof(INET_ADDR));
