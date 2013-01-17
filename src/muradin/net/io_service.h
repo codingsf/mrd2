@@ -70,13 +70,13 @@ namespace net{
 		void	queue_task(const task& func);
 
 		void	on_read();
-		void	week_me_up();
+		void	wake_me_up();
 		/// wait for event 
 		void	wait_channel(channel_list& saver,boost::uint32_t timeout_ms);
 	private:
-		const boost::thread::id 		m_loop_owner_id;
+		const boost::thread::id 		m_owner_tid;
 		boost::scoped_ptr<poller_epoll>	m_poller;
-		SOCKET_FD 						m_weekup_fd;
+		SOCKET_FD 						m_wakeup_fd;
 		evt_channel						m_self_channel;
 		bool							m_running_pending_tasks;
 		bool							m_exit;

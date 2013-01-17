@@ -3,6 +3,7 @@
 #include <muradin/base/log_warper.h>
 
 #include <errno.h>
+#include <assert.h>
 
 #include <boost/bind.hpp>
 
@@ -22,6 +23,7 @@ namespace net{
 	m_close_cb(NULL),
 	m_conn_status(kDisconnect)
 	{
+		LOG_INFO.stream()<<"connection >>>>>>>>>>>>>>>>>> c-tor "<<ENDLN;
 		m_channle.set_read_cb(boost::bind(&connection::handle_read,this));
 		m_channle.set_write_cb(boost::bind(&connection::handle_write,this));
 		m_channle.set_close_cb(boost::bind(&connection::handle_close,this));
@@ -30,24 +32,53 @@ namespace net{
 	}
 	connection::~connection()
 	{
-		LOG_INFO.stream()<<"connection >>>>>> d-tor "<<ENDLN;
+		LOG_INFO.stream()<<"connection >>>>>>>>>>>>>>>>>> d-tor "<<ENDLN;
 	}
 
-	void	connection::tcp_enstablished()
+	void	connection::start()
 	{
 		m_service.add_channel(&m_channle);
 		m_channle.enable_read(true);
 		m_conn_status=kConnected;
 		m_conn_cb(shared_from_this());
 	}
-	net::buffer connection::cached_msg()
+	void	connection::destory()
 	{
-		return net::buffer(m_read_cache.rd_ptr(),m_read_cache.readable_bytes());
+		assert(m_conn_status == kDisconnect);
+		m_channle.enable_read(false);
+		m_channle.enable_write(false);
+		m_service.del_channel(&m_channle);
+	}
+
+	bytebuffer& connection::read_buffer()
+	{
+		return m_read_cache;
 	}
 	void	connection::write(const net::buffer& data)
 	{
 		//
-		// if get EAGAIN call m_channle.enable_write(true);
+		write(data.data(),data.size());
+	}
+	void	connection::write(const void* data,size_t len)
+	{
+		//
+		assert(m_service.check_this_loop());
+		//bool error=false;
+		int ret=::write(m_socket.fd(),data,len);
+		if (ret < 0){
+			if(errno != EAGAIN){
+				LOG_EROR.stream()<<"write fail errno = " << errno <<ENDLN;
+			}else{
+				m_write_cache.append(data,len);
+				m_channle.enable_write(true);
+			}
+		}else{
+			if(ret < len){
+				m_write_cache.append(data,len-ret);
+				m_channle.enable_write(true);
+			}
+			m_msg_complete_cb(shared_from_this(),ret);
+		}
 	}
 	void	connection::shutdown()
 	{
@@ -59,6 +90,19 @@ namespace net{
 	{
 		//m_socket->read();
 		LOG_INFO.stream()<<"handle_read "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port()<<ENDLN;
+		static int max_readbytes_once=1024*8;
+		m_read_cache.ensure_write_space(static_cast<size_t>(max_readbytes_once));
+		int ret=::read(m_socket.fd(),m_read_cache.wt_ptr(),max_readbytes_once);
+		if(ret == 0){
+			// peer shutdown
+			m_conn_cb(shared_from_this());
+			handle_close();
+		}else if(ret > 0 ){
+			m_read_cache.has_written(static_cast<size_t>(ret));
+			m_msg_cb(shared_from_this());
+		}else{
+			LOG_EROR.stream()<<"read fail errno = " << errno <<ENDLN;
+		}
 		// call m_msg_cb;
 	}
 	/// fd writeable
@@ -67,13 +111,23 @@ namespace net{
 		// m_socket->write();
 		LOG_INFO.stream()<<"handle_write "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port()<<ENDLN;
 		/// write success call m_msg_complete_cb
+		int ret=::write(m_socket.fd(),m_write_cache.rd_ptr(),(int)m_write_cache.readable_bytes());
+		if(ret > 0 ){
+			m_write_cache.discard(ret);
+			if(m_write_cache.readable_bytes() <= 0)
+				m_channle.enable_write(false);
+
+			m_msg_complete_cb(shared_from_this(),ret);
+		}else{
+			LOG_EROR.stream()<<"write fail errno = " << errno <<ENDLN;
+		}
 	}
 	/// handle sys-error
 	void		connection::handle_error()
 	{
 		//
-		LOG_INFO.stream()<<"handle_error "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port()<<ENDLN;
-		/// write success call errcb
+		LOG_INFO.stream()<<"handle_error "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port() << " errno = " << socket::retrieve_err(m_socket.fd())<<ENDLN;
+		///  call errcb
 	}
 	/// network closed by peer
 	void		connection::handle_close()
@@ -81,6 +135,8 @@ namespace net{
 		// close passivity
 		LOG_INFO.stream()<<"handle_close "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port()<<ENDLN;
 		m_conn_status=kDisconnect;
+
+
 		m_conn_cb(shared_from_this());
 		m_close_cb(shared_from_this()); 
 	}

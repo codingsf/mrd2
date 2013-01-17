@@ -49,7 +49,7 @@ namespace muradin{
 				m_conn_map[fd]=new_conn;
 				LOG_INFO.stream()<<"new conn form :"<< addr.get_ip() << " : " << addr.get_port()<<ENDLN;
 				/// notify connection
-				new_conn->tcp_enstablished();
+				new_conn->start();
 			}else{
 				// got error
 				LOG_EROR.stream()<<"epoll_ctl fail,errno:"<< errno<<ENDLN;
@@ -58,6 +58,7 @@ namespace muradin{
 		void	tcp_server::on_remove_conn(connection_ptr conn)
 		{
 			m_conn_map.erase(conn->fd());
+			conn->destory();
 			/// socket FD closed in connection's d-tor
 		}
 	}

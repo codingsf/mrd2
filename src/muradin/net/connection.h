@@ -27,12 +27,20 @@ namespace net{
 
 		connection(io_service& ios,SOCKET_FD fd,const endpoint_v4& peer_addr);
 		~connection();
-		conn_stat conn_status()const{return m_conn_status;};
-		void	tcp_enstablished();
-		net::buffer cached_msg();
+		bool	connected()const{return m_conn_status == kConnected;};
+
+		void	start();
+		void	destory();
+
+		bytebuffer& read_buffer();
 
 		SOCKET_FD fd(){return m_socket.fd();};
+
+		/// 
+		/// thread-safe
 		void	write(const net::buffer& data);
+		/// 
+		/// thread-safe
 		void	shutdown();
 
 		/// set callback (error)
@@ -54,6 +62,8 @@ namespace net{
 		void		handle_error();
 		/// network closed by peer
 		void		handle_close();
+		/// wite 
+		void		write(const void* data,size_t len);
 	private:
 		socket 		m_socket;
 		io_service&	m_service;

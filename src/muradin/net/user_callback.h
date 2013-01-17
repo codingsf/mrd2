@@ -23,7 +23,7 @@ namespace net{
 	/// 连接建立或者关闭回调
 	typedef	boost::function<void(const conn_ptr&)>						on_connect;
 	/// 消息发送完成回调
-	typedef boost::function<void(const conn_ptr&,size_t)>					on_msg_complete;
+	typedef boost::function<void(const conn_ptr&,size_t)>				on_msg_complete;
 	/// 消息接收回调
 	typedef boost::function<void(const conn_ptr&)>						on_msg;
 	/// 网络错误回调

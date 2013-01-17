@@ -56,6 +56,9 @@ namespace net{
 		/// return -1 if fail.check errno
 		static	int connect(SOCKET_FD fd,endpoint_v4& remote_addr);
 
+		/// get error code and clear
+		static	int retrieve_err(SOCKET_FD fd);
+
 	private:
 		SOCKET_FD	m_fd;
 	};

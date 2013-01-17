@@ -1,7 +1,9 @@
 #include <muradin/net/socket.h>
+#include <muradin/net/socket_ctl.h>
+
 #include <sys/types.h>    // for socklen_t
 #include <sys/socket.h>
-#include <muradin/net/socket_ctl.h>
+#include <errno.h>
 
 namespace muradin{
 namespace net{
@@ -66,6 +68,18 @@ namespace net{
 	{
 		INET_ADDR addr_inet = remote_addr.address();
 		return ::connect(fd,(struct sockaddr*)&addr_inet,static_cast<socklen_t>( sizeof(INET_ADDR) ) );
+	}
+
+	int socket::retrieve_err(SOCKET_FD fd)
+	{
+		int optval;
+		socklen_t optlen = sizeof (optval);
+
+		if (::getsockopt(fd, SOL_SOCKET, SO_ERROR, &optval, &optlen) < 0){
+			return errno;
+		}else{
+			return optval;
+		}
 	}
 
 }

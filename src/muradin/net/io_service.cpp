@@ -1,22 +1,36 @@
 #include <muradin/net/io_service.h>
 #include <muradin/net/socket.h>
+#include <muradin/base/log_warper.h>
 
 #include <assert.h>
 #include <unistd.h>
+#include <sys/eventfd.h>
 
 #include <boost/bind.hpp>
 
+
+
+int create_evt_fd()
+{
+	int evtfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
+	if (evtfd < 0){
+		LOG_FATL.stream()<<"eventfd fail"<<ENDLN; 
+		abort();
+	}
+	return evtfd;
+}
+
 namespace muradin{
 namespace net{
-	io_service::io_service()
-	:m_loop_owner_id(boost::this_thread::get_id()),
+	io_service::io_service() 
+	:m_owner_tid(boost::this_thread::get_id()),
 	m_poller(new poller_epoll()),
-	m_weekup_fd(socket::create()),	
-	m_self_channel(m_weekup_fd,*this),		
+	m_wakeup_fd(create_evt_fd()),	
+	m_self_channel(m_wakeup_fd,*this),		
 	m_running_pending_tasks(false),
 	m_exit(false)
 	{
-		assert(m_weekup_fd > 0);
+		assert(m_wakeup_fd > 0);
 		
 		m_self_channel.set_read_cb(boost::bind(&io_service::on_read,this));
 		add_channel(&m_self_channel);
@@ -31,7 +45,7 @@ namespace net{
 	{
 		channel_list	active_channels;
 		static const boost::uint32_t poll_timout_ms=1000;
-		while(m_exit){
+		while(!m_exit){
 			active_channels.clear();
 
 			wait_channel(active_channels,poll_timout_ms);
@@ -80,7 +94,7 @@ namespace net{
 		{
 			// queue_task was called from other thread
 			// queue_task was called form loop thread,but pending tasks are running
-			week_me_up();
+			wake_me_up();
 		}
 	}
 	void	io_service::run_task_at(const task& func)
@@ -98,7 +112,7 @@ namespace net{
 
 	bool	io_service::check_this_loop()
 	{
-		return m_loop_owner_id == boost::this_thread::get_id();
+		return m_owner_tid == boost::this_thread::get_id();
 	}
 	void	io_service::run_pending_task()
 	{
@@ -115,25 +129,25 @@ namespace net{
 		}
 		m_running_pending_tasks=false;
 	}
-	void	io_service::week_me_up()
+	void	io_service::wake_me_up()
 	{
 		static const size_t write_bytes=sizeof(void*);
 		static const char buff[write_bytes]={0};
-		::write(m_weekup_fd,buff,write_bytes);
+		::write(m_wakeup_fd,buff,write_bytes);
 	}
 
 	void	io_service::on_read()
 	{
 		static const size_t read_bytes=sizeof(void*);
 		static char buff[read_bytes]={0};
-		::read(m_weekup_fd,buff,read_bytes);
+		::read(m_wakeup_fd,buff,read_bytes);
 	}
 	void	io_service::wait_channel(channel_list& saver,boost::uint32_t timeout_ms)
 	{
 		/// blocking untill:
 		///   - get IO-Event form OS
 		///   - timeout
-		///   - week_me_up has been called.
+		///   - wake_me_up has been called.
 
 		m_poller->wait_for_evt(saver,timeout_ms);
 	}
@@ -141,7 +155,7 @@ namespace net{
 	{
 		assert(check_this_loop() == true);
 		m_exit=true;
-		week_me_up();
+		wake_me_up();
 	}
 }
 }

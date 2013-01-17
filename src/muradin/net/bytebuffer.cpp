@@ -1,7 +1,7 @@
 #include <muradin/net/bytebuffer.h>
 #include <muradin/net/endian.h>
 
-
+#include <string.h>
 #include <assert.h>
 
 #include <algorithm>

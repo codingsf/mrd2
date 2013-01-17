@@ -11,7 +11,10 @@ namespace net{
 		{
 			m_address.sin_family=AF_INET;
 			m_address.sin_port= uint16_hton(port);
-			inet_pton(AF_INET,ip.c_str(),&m_address.sin_addr);
+			if(ip.length() == 0 ) 
+				m_address.sin_addr.s_addr = INADDR_ANY;
+			else
+				inet_pton(AF_INET,ip.c_str(),&m_address.sin_addr);
 		}
 
 		endpoint_v4::endpoint_v4(const std::string& ip)

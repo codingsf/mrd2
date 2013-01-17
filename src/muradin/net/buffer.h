@@ -1,5 +1,6 @@
 #ifndef MURADIN_NET_BUFFER_H__
 #define MURADIN_NET_BUFFER_H__
+
 namespace muradin{
 namespace net{
 	

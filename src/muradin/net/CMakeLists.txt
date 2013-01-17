@@ -9,7 +9,9 @@ net_address.cpp
 socket.cpp
 socket_ctl.cpp
 tcp_server.cpp
+bytebuffer.cpp
  )
 
 add_library(muradin_net ${net_SRCS})
-target_link_libraries(muradin_net muradin_base)
+target_link_libraries(muradin_net  muradin_base )
+

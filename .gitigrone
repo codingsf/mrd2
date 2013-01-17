@@ -23,3 +23,8 @@ Makefile
 cmake_install.cmake
 install_manifest.txt
 
+#vim
+.*.sw[a-z]
+*.un~
+Session.vim
+.netrwhist
