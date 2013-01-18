@@ -24,7 +24,7 @@ namespace muradin{
 		{
 			//
 		}
-		void	tcp_server::start()
+		void	tcp_server::ready()
 		{
 			m_acceptor.start();
 		}
@@ -47,12 +47,12 @@ namespace muradin{
 				new_conn->set_msg_complete_cb(m_msg_complete_cb);
 				new_conn->set_conn_cb(m_conn_cb);
 				m_conn_map[fd]=new_conn;
-				LOG_INFO.stream()<<"new conn form :"<< addr.get_ip() << " : " << addr.get_port()<<ENDLN;
+				LOG_INFO.stream()<<"new conn form :"<< addr.get_ip() << " : " << addr.get_port();
 				/// notify connection
 				new_conn->start();
 			}else{
 				// got error
-				LOG_EROR.stream()<<"epoll_ctl fail,errno:"<< errno<<ENDLN;
+				LOG_EROR.stream()<<"epoll_ctl fail,errno:"<< errno;
 			}
 		}
 		void	tcp_server::on_remove_conn(connection_ptr conn)

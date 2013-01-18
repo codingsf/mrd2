@@ -63,7 +63,7 @@ namespace net{
 		/// network closed by peer
 		void		handle_close();
 		/// wite 
-		void		write(const void* data,size_t len);
+		void		write_in_loop(const void* data,size_t len);
 	private:
 		socket 		m_socket;
 		io_service&	m_service;

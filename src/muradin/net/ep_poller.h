@@ -28,6 +28,8 @@ namespace net{
 		void	wait_for_evt(channel_list& active_channels,boost::uint32_t wait_timeout_ms);
 	private:
 		evt_channel*	find_channel(SOCKET_FD fd);
+		// for debug
+		void			assert_channel(evt_channel* channel,bool need_exist);
 	private:
 		enum  { kMaxPollEvt=256 };
 		int				m_fd;

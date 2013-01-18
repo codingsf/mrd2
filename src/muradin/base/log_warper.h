@@ -62,7 +62,6 @@ private:
 // write log and call abort()
 #define		LOG_FATL					(muradin::base::log_warper(muradin::base::ll_fatal_err,__FILE__,__FUNCTION__,__LINE__))
 
-#define		ENDLN 	("\r\n")
 
 
 

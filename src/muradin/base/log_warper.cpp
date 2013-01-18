@@ -5,6 +5,9 @@
 #include <stdlib.h> // for abort()
 #include <string.h> // for strrchr strerror
 
+
+#define		ENDLN 	("\r\n")
+
 namespace muradin
 {
 namespace base
@@ -12,8 +15,12 @@ namespace base
 
 OutputFunc	g_out_put_func=NULL;
 FlushFunc	g_flush_func=NULL;
+#if defined(ENABLE_LOG_FUNCTION_NAME)
+static size_t g_log_head_padding=60;
+#else
+static size_t g_log_head_padding=40;
+#endif
 
-static size_t g_log_head_padding=100;
 static loging_level	g_log_level=ll_debug;
 static const	std::string	g_crlf="\r\n";
 static const	std::string g_str_spliter="|";
@@ -90,7 +97,9 @@ public:
 		ostream_<< "[";
 		if (source_file.length() + func_name.length() > 0){
 			ostream_<<"S="<<source_file<<g_str_spliter
+#if defined(ENABLE_LOG_FUNCTION_NAME)
 				<<"F="<<func_name<<g_str_spliter
+#endif
 				<<"L="<<line_number;
 		}
 		ostream_<<"]"<<space_2;
@@ -104,8 +113,10 @@ public:
 		ostream_<< "[";
 		if (source_file.length() + func_name.length() > 0){
 			ostream_<<"S="<<source_file<<g_str_spliter
-				<<"F="<<func_name<<g_str_spliter
-				<<"L="<<line_number;
+#if defined(ENABLE_LOG_FUNCTION_NAME)
+			<<"F="<<func_name<<g_str_spliter
+#endif
+			<<"L="<<line_number;
 		}
 		ostream_<<"]"<<space_2<<"error = "<<error_no << ".";
 		pading_space();

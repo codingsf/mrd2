@@ -4,7 +4,10 @@
 
 #include <muradin/net/socket_fd.h>
 
+#include <string>
+
 #include <boost/function.hpp>
+
 
 namespace muradin {
 namespace net{
@@ -17,9 +20,9 @@ namespace net{
 
 		friend class io_service;
 	public:
-		evt_channel(SOCKET_FD fd,io_service& ios);
+		evt_channel(SOCKET_FD fd,io_service& ios,const std::string& name="unknow");
 		~evt_channel();
-		
+		std::string	get_name()const{return m_name;};
 		void	join_to_service();
 		void	remove_from_service();
 		void	enable_read(bool enable);
@@ -40,6 +43,7 @@ namespace net{
 	private:
 		void	process_work();
 	private:
+		std::string				m_name;
 		SOCKET_FD m_fd;
 		int		m_last_evt_status;
 		io_service&	m_service;

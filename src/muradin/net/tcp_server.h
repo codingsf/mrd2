@@ -19,7 +19,7 @@ namespace muradin{
 		public:
 			tcp_server(const std::string& local_ip, boost::uint16_t losten_port,io_service& ios);
 			~tcp_server();
-			void	start();
+			void	ready();
 			void	stop();
 
 			/// 连接建立回调

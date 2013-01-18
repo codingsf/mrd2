@@ -1,4 +1,5 @@
 #include <muradin/net/acceptor.h>
+#include <muradin/net/socket_ctl.h>
 
 namespace muradin{
 namespace net{
@@ -7,13 +8,17 @@ namespace net{
 	m_socket(socket::create()),
 	m_accept_cb(NULL),
 	m_addr(local_addr),
-	m_channel(m_socket.fd(),m_service)
+	m_channel(m_socket.fd(),m_service,"acceptor-chnl" )
 	{
 		assert(m_socket.fd() > 0);
 
-		socket::bind(m_socket.fd(),m_addr); /// FIXME::check
+		socket::bind(m_socket.fd(),m_addr); 				/// FIXME::check
+		socket_ctl::set_tcp_nodelay(m_socket.fd(),true);	/// FIXME::check
+		socket_ctl::set_reuse_addr(m_socket.fd(),true);		/// FIXME::check
+
 		m_channel.set_read_cb(boost::bind(&acceptor::on_read,this));
-		m_service.add_channel(&m_channel);
+		m_channel.join_to_service();
+		//m_service.add_channel(&m_channel);
 	}
 
 	acceptor::~acceptor()
@@ -29,7 +34,8 @@ namespace net{
 	void	acceptor::stop()
 	{
 		m_channel.enable_read(false);
-		m_service.del_channel(&m_channel);
+		//m_service.del_channel(&m_channel);
+		m_channel.remove_from_service();
 	}
 	
 

@@ -27,19 +27,19 @@ namespace net{
 		io_service();
 		~io_service();
 
-		/// main loop
-		void	loop();
+		/// run main loop
+		void	run();
 
-		/// exit main loop
-		void	exit();
+		/// quit main loop
+		void	quit();
 
-		/// add new channel 
+		/// add new channel ,for evt_channel only
 		void	add_channel(evt_channel* channel);
 
-		/// remove a channel
+		/// remove a channel,for evt_channel only
 		void	del_channel(evt_channel* channel);
 
-		/// update a channel for subcrib event
+		/// update a channel event,for evt_channel only
 		void	update_channel(evt_channel* channel);
 
 		/// run task
@@ -73,13 +73,24 @@ namespace net{
 		void	wake_me_up();
 		/// wait for event 
 		void	wait_channel(channel_list& saver,boost::uint32_t timeout_ms);
+
+
+		/// add new channel in loop
+		void	add_channel_in_loop(evt_channel* channel);
+
+		/// remove a channel in loop
+		void	del_channel_in_loop(evt_channel* channel);
+
+		/// update a channel for subcrib event  in loop
+		void	update_channel_in_loop(evt_channel* channel);
+
 	private:
 		const boost::thread::id 		m_owner_tid;
 		boost::scoped_ptr<poller_epoll>	m_poller;
 		SOCKET_FD 						m_wakeup_fd;
 		evt_channel						m_self_channel;
 		bool							m_running_pending_tasks;
-		bool							m_exit;
+		bool							m_quit;
 
 		task_list						m_pending_tasks;
 		mutex_type						m_mutex;

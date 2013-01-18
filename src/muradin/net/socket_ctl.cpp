@@ -2,6 +2,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+
 namespace muradin{
 namespace net{
 
@@ -23,5 +26,18 @@ namespace net{
 		flags |= FD_CLOEXEC;
 		return ::fcntl(fd, F_SETFD, flags);
 	}
+
+	int socket_ctl::set_tcp_nodelay(SOCKET_FD fd,bool on)
+	{
+		int optval = on ? 1 : 0;
+		return ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY,&optval, sizeof(optval) );
+	}
+
+	int socket_ctl::set_reuse_addr(SOCKET_FD fd,bool on)
+	{
+		int optval = on ? 1 : 0;
+		return ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR,&optval, sizeof(optval) );
+	}
+
 }
 }

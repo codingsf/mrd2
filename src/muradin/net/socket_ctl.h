@@ -19,6 +19,17 @@ namespace net{
 		/// return 0 if succsee
 		/// return -1 if fail. check errno
 		static int set_cloexec(SOCKET_FD fd);
+
+		/// set TCP_NODELAY
+		/// return 0 if succsee
+		/// return -1 if fail. check errno
+		static int set_tcp_nodelay(SOCKET_FD fd,bool on);
+
+		/// set SO_REUSEADDR
+		/// return 0 if succsee
+		/// return -1 if fail. check errno
+		static int set_reuse_addr(SOCKET_FD fd,bool on);
+
 	};
 	
 }
