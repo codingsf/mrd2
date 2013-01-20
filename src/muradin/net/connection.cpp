@@ -73,6 +73,13 @@ namespace net{
 	{
 		//
 		assert(m_service.check_this_loop());
+		if (m_write_cache.readable_bytes() > 0 )
+		{
+			m_write_cache.append(data,len);
+			m_channle.enable_write(true);
+			return;
+		}
+		
 		int ret=m_socket.send(data,len);
 		if (ret < 0){
 			if(errno == EAGAIN){

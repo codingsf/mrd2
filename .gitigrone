@@ -28,3 +28,15 @@ install_manifest.txt
 *.un~
 Session.vim
 .netrwhist
+
+# SublimeText project files
+*.sublime-workspace
+
+# vim
+.*.sw[a-z]
+*.un~
+Session.vim
+.netrwhist
+
+
+
