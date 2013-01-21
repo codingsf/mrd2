@@ -23,7 +23,7 @@ poller_epoll::~poller_epoll()
 }
 void			poller_epoll::assert_channel( evt_channel* channel,bool need_exist)
 {
-	LOG_INFO.stream()<< "check channel :"<<channel->get_name();
+	//LOG_INFO.stream()<< "check channel :"<<channel->get_name();
 	evt_channel* ptr=find_channel(channel->fd());
 	if(need_exist && !ptr){
 		LOG_EROR.stream()<< channel->get_name()<<" not exists";

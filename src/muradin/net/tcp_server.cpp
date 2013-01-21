@@ -10,12 +10,14 @@
 namespace muradin{
 	namespace net{
 
-		tcp_server::tcp_server(const std::string& local_ip, boost::uint16_t losten_port,io_service& ios)
+		tcp_server::tcp_server(const std::string& local_ip, boost::uint16_t losten_port,io_service& ios,size_t thread_number)
 		:m_io_service(ios),
 		m_acceptor(endpoint_v4(local_ip,losten_port),ios),
 		m_conn_cb(NULL),
 		m_msg_cb(NULL),
-		m_msg_complete_cb(NULL)
+		m_msg_complete_cb(NULL),
+		m_err_cb(NULL),
+		m_service_pool(thread_number)
 		{
 			m_acceptor.set_accept_cb( boost::bind(&tcp_server::on_new_conn,this) );
 		}
@@ -26,6 +28,7 @@ namespace muradin{
 		}
 		void	tcp_server::ready()
 		{
+			m_service_pool.run();
 			m_acceptor.start();
 		}
 		void	tcp_server::stop()
@@ -40,7 +43,8 @@ namespace muradin{
 			endpoint_v4 addr;
 			SOCKET_FD fd = socket::accept(m_acceptor.fd(),addr); 
 			if (fd != -1 ){
-				connection_ptr new_conn(new connection(m_io_service,fd,addr));
+				io_service* ios_ptr = m_service_pool.next_service();
+				connection_ptr new_conn(new connection(*ios_ptr,fd,addr));
 
 				new_conn->set_close_cb(boost::bind(&tcp_server::on_remove_conn,this,_1));
 				new_conn->set_msg_cb(m_msg_cb);

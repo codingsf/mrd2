@@ -44,7 +44,7 @@ namespace net{
 		void	shutdown();
 
 		/// set callback (error)
-		void	set_error_cb(){/* */};
+		void	set_error_cb(const on_error& func){m_err_cb = func;};
 		/// set callback (connection open,closed)
 		void	set_close_cb(const close_callback& func){m_close_cb=func;};
 		/// set callback (msg has read)
@@ -76,6 +76,7 @@ namespace net{
 		on_msg 		m_msg_cb;
 		on_msg_complete m_msg_complete_cb;
 		close_callback  m_close_cb;
+		on_error	m_err_cb;
 		conn_stat		m_conn_status;
 	};
 

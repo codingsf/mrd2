@@ -117,7 +117,7 @@ namespace net{
 
 	void	evt_channel::process_work()
 	{
-		trace_evt_flag(m_last_evt_status);
+		//trace_evt_flag(m_last_evt_status);
 		
 		if((m_last_evt_status & EPOLLHUP) && !(m_last_evt_status & EPOLLIN)){
 			/// 连接被挂断,并且不可读

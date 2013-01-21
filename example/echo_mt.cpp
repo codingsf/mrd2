@@ -1,15 +1,14 @@
-#include <muradin/net/tcp_server.h>
-#include <muradin/net/connection.h>
-#include <muradin/net/io_service.h>
-#include <muradin/net/net_address.h>
-#include <muradin/net/buffer.h>
+#include <muradin/muradin.h>
 #include <muradin/base/log_warper.h>
+#include <muradin/base/blocking_counter.h>
 
 #include <boost/thread.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
 #include <iostream>
+
+muradin::base::blocking_counter g_counter(1);
 
 void on_conn(const muradin::net::connection_ptr& conn)
 {
@@ -19,7 +18,7 @@ void on_conn(const muradin::net::connection_ptr& conn)
 void on_msg(const muradin::net::connection_ptr& conn)
 {
 	//
-	LOG_INFO.stream()   << " ***************** on_msg" ;
+	LOG_INFO.stream()   << " ***************** on_msg,size = "<<conn->read_buffer().readable_bytes() ;
 	conn->write( 
 		muradin::net::buffer(conn->read_buffer().rd_ptr(),conn->read_buffer().readable_bytes() )
 		);
@@ -33,15 +32,17 @@ void on_msg_complete(const muradin::net::connection_ptr& conn,size_t bytes)
 
 void	run_srv(const char* ip,unsigned short port,muradin::net::io_service& ios)
 {
-	muradin::net::tcp_server serv(ip,port,ios); 
+	muradin::net::tcp_server serv(ip,port,ios,2); 
 	serv.set_conn_cb(on_conn);
 	serv.set_msg_cb(on_msg);
 	serv.set_msg_complete_cb(on_msg_complete);
 
 	serv.ready();
-	muradin::net::io_service place_holer;
-	place_holer.run();
+	LOG_INFO.stream() <<"####################### thread wait for exit ####################### ";
+	g_counter.wait_for(0);
+	LOG_INFO.stream() <<"####################### thread exit ####################### ";
 }
+
 int main(int nagrv,char** argc)
 {
 	const char* bind_ip= "";

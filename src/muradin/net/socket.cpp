@@ -17,6 +17,17 @@ namespace net{
 	{
 		socket::close(m_fd);
 	}
+
+	int			socket::send(const void* data,size_t len)
+	{
+		return ::send(m_fd,data,len,0);
+	}
+
+	int			socket::recv(void* buff,size_t max_bytes)
+	{
+		return ::recv(m_fd,buff,max_bytes,0);
+	}
+
 	SOCKET_FD socket::create()
 	{
 		// need Linux kernel 2.6.27

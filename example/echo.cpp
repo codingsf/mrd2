@@ -1,8 +1,5 @@
-#include <muradin/net/tcp_server.h>
-#include <muradin/net/connection.h>
-#include <muradin/net/io_service.h>
-#include <muradin/net/net_address.h>
-#include <muradin/net/buffer.h>
+#include <muradin/muradin.h>
+
 #include <muradin/base/log_warper.h>
 
 #include <iostream>
@@ -31,7 +28,7 @@ int main(int nagrv,char** argc)
 	const char* bind_ip= "";
 	unsigned short bind_port= 4001;
 	muradin::net::io_service ios;
-	muradin::net::tcp_server serv(bind_ip,bind_port,ios); 
+	muradin::net::tcp_server serv(bind_ip,bind_port,ios,1); 
 	LOG_INFO.stream() <<" runing ";
 	LOG_INFO.stream() <<bind_ip << " : " << bind_port ;
 	serv.set_conn_cb(on_conn);

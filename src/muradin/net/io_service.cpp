@@ -5,9 +5,23 @@
 #include <assert.h>
 #include <unistd.h>
 #include <sys/eventfd.h>
+#include <signal.h>
 
 #include <boost/bind.hpp>
 
+namespace{
+	class igrone_sig_pipe
+	{
+	public:
+		igrone_sig_pipe()
+		{
+			::signal(SIGPIPE, SIG_IGN);
+			//LOG_INFO.stream() << "Ignore SIGPIPE";
+		}
+	};
+	igrone_sig_pipe ig_pipe;
+
+}
 
 
 int create_evt_fd()
@@ -32,7 +46,7 @@ namespace net{
 	{
 		assert(m_wakeup_fd > 0);
 		
-		LOG_INFO.stream()<<"io_service >>>>>>>>>>>>>>>>>> c-tor ";
+		//LOG_INFO.stream()<<"io_service >>>>>>>>>>>>>>>>>> c-tor ";
 		m_self_channel.set_read_cb(boost::bind(&io_service::on_read,this));
 		//add_channel(&m_self_channel);
 		m_self_channel.join_to_service();
@@ -53,7 +67,8 @@ namespace net{
 
 			wait_channel(active_channels,poll_timout_ms);
 			
-			LOG_INFO.stream()<<"process_work : "<<active_channels.size();
+			//LOG_INFO.stream()<<"process_work : "<<active_channels.size();
+
 			// dispath io-event first
 			for (int i = 0; i < active_channels.size(); ++i){
 				active_channels[i]->process_work();
@@ -63,6 +78,11 @@ namespace net{
 		}
 	}
 
+	void	io_service::quit()
+	{
+		m_quit=true;
+		wake_me_up();
+	}
 	void	io_service::add_channel(evt_channel* channel)
 	{
 		if(check_this_loop() ){
@@ -106,7 +126,7 @@ namespace net{
 		{
 			lock_type	lock(m_mutex);
 			m_pending_tasks.push_back(func);
-			LOG_INFO.stream()<<"task has enqueued" ;
+			//LOG_INFO.stream()<<"task has enqueued" ;
 		}
 
 		if (!check_this_loop() || m_running_pending_tasks )
@@ -144,7 +164,7 @@ namespace net{
 			m_pending_tasks.swap(to_run);
 		}
 
-		LOG_INFO.stream()<<"run_pending_task,size = "<<to_run.size() ;
+		//LOG_INFO.stream()<<"run_pending_task,size = "<<to_run.size() ;
 		for(size_t i=0;i<to_run.size();++i){
 			to_run[i]();
 		}
@@ -174,11 +194,6 @@ namespace net{
 		///   - wake_me_up has been called.
 
 		m_poller->wait_for_evt(saver,timeout_ms);
-	}
-	void	io_service::quit()
-	{
-		m_quit=true;
-		wake_me_up();
 	}
 
 	void	io_service::add_channel_in_loop(evt_channel* channel)

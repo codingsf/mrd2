@@ -15,6 +15,8 @@ namespace net{
 		socket::bind(m_socket.fd(),m_addr); 				/// FIXME::check
 		socket_ctl::set_tcp_nodelay(m_socket.fd(),true);	/// FIXME::check
 		socket_ctl::set_reuse_addr(m_socket.fd(),true);		/// FIXME::check
+		socket_ctl::set_recv_buff_size(m_socket.fd(),16*1024);		/// FIXME::check
+
 
 		m_channel.set_read_cb(boost::bind(&acceptor::on_read,this));
 		m_channel.join_to_service();

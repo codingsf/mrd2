@@ -59,6 +59,16 @@ namespace net{
 		/// get error code and clear
 		static	int retrieve_err(SOCKET_FD fd);
 
+		/// send
+		/// return bytes sends
+		/// return -1 if fail.check errno
+		int			send(const void* data,size_t len);
+
+		/// recv
+		/// return bytes recved
+		/// return -1 if fail.check errno
+		int			recv(void* buff,size_t max_bytes);
+
 	private:
 		SOCKET_FD	m_fd;
 	};

@@ -10,6 +10,8 @@ socket.cpp
 socket_ctl.cpp
 tcp_server.cpp
 bytebuffer.cpp
+service_thread.cpp
+io_service_pool.cpp
  )
 
 add_library(muradin_net ${net_SRCS})

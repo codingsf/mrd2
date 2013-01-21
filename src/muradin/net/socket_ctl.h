@@ -30,6 +30,22 @@ namespace net{
 		/// return -1 if fail. check errno
 		static int set_reuse_addr(SOCKET_FD fd,bool on);
 
+
+		/// set SO_RCVBUF
+		/// return 0 if succsee
+		/// return -1 if fail. check errno
+		static int set_recv_buff_size(SOCKET_FD fd,int bytes);
+
+		/// set SO_SNDBUF
+		/// return 0 if succsee
+		/// return -1 if fail. check errno
+		static int set_send_buff_size(SOCKET_FD fd,int bytes);
+
+		/// set SO_KEEPALIVE
+		/// return 0 if succsee
+		/// return -1 if fail. check errno
+		static int set_keepalive(SOCKET_FD fd);
+
 	};
 	
 }

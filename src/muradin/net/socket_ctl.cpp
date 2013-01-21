@@ -39,5 +39,19 @@ namespace net{
 		return ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR,&optval, sizeof(optval) );
 	}
 
+	int socket_ctl::set_recv_buff_size(SOCKET_FD fd,int bytes)
+	{
+		return ::setsockopt(fd, SOL_SOCKET, SO_RCVBUF,&bytes, sizeof(bytes) );
+	}
+
+	int socket_ctl::set_send_buff_size(SOCKET_FD fd,int bytes)
+	{
+		return ::setsockopt(fd, SOL_SOCKET, SO_SNDBUF,&bytes, sizeof(bytes) );
+	}
+	int socket_ctl::set_keepalive(SOCKET_FD fd)
+	{
+		int optval = 1;
+		return ::setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE,&optval, sizeof(optval) );
+	}
 }
 }

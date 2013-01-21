@@ -16,9 +16,9 @@ namespace base
 OutputFunc	g_out_put_func=NULL;
 FlushFunc	g_flush_func=NULL;
 #if defined(ENABLE_LOG_FUNCTION_NAME)
-static size_t g_log_head_padding=60;
+static size_t g_log_head_padding=90;
 #else
-static size_t g_log_head_padding=40;
+static size_t g_log_head_padding=70;
 #endif
 
 static loging_level	g_log_level=ll_debug;

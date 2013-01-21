@@ -27,7 +27,7 @@ namespace net{
 	/// 消息接收回调
 	typedef boost::function<void(const conn_ptr&)>						on_msg;
 	/// 网络错误回调
-	typedef boost::function<void(const muradin::base::sys_error&)>				on_error;
+	typedef boost::function<void(const conn_ptr&,const muradin::base::sys_error&)>		on_error;
 }
 }
 #endif//MURADIN_NET_USER_CALL_BACK_H__
