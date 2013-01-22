@@ -21,13 +21,13 @@ namespace net{
 	typedef boost::function<void(const conn_ptr&) > 					close_callback;
 	
 	/// 连接建立或者关闭回调
-	typedef	boost::function<void(const conn_ptr&)>						on_connect;
+	typedef	boost::function<void(const conn_ptr&)>						connect_callback;
 	/// 消息发送完成回调
-	typedef boost::function<void(const conn_ptr&,size_t)>				on_msg_complete;
+	typedef boost::function<void(const conn_ptr&,const muradin::base::sys_error&,size_t)>				write_callback;
 	/// 消息接收回调
-	typedef boost::function<void(const conn_ptr&)>						on_msg;
+	typedef boost::function<void(const conn_ptr&,const muradin::base::sys_error&)>						read_callback;
 	/// 网络错误回调
-	typedef boost::function<void(const conn_ptr&,const muradin::base::sys_error&)>		on_error;
+	typedef boost::function<void(const conn_ptr&,const muradin::base::sys_error&)>						error_callback;
 }
 }
 #endif//MURADIN_NET_USER_CALL_BACK_H__

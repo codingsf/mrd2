@@ -7,7 +7,7 @@
 #include <string>
 
 #include <boost/function.hpp>
-
+#include <boost/weak_ptr.hpp>
 
 namespace muradin {
 namespace net{
@@ -18,7 +18,6 @@ namespace net{
 	public:
 		typedef	boost::function<void()>		evt_notify_functor;
 
-		friend class io_service;
 	public:
 		evt_channel(SOCKET_FD fd,io_service& ios,const std::string& name="unknow");
 		~evt_channel();
@@ -29,10 +28,14 @@ namespace net{
 		void	enable_write(bool enable);
 
 
-		void	set_error_cb(const evt_notify_functor& func){m_error_cb = func;};
-		void	set_close_cb(const evt_notify_functor& func){m_close_cb = func;};
-		void	set_read_cb(const evt_notify_functor& func){m_read_cb = func;};
-		void	set_write_cb(const evt_notify_functor& func){m_write_cb = func;};
+		void	set_error_callback(const evt_notify_functor& func){m_error_callback = func;};
+		void	set_close_callback(const evt_notify_functor& func){m_close_callback = func;};
+		void	set_read_callback(const evt_notify_functor& func){m_read_callback = func;};
+		void	set_write_callback(const evt_notify_functor& func){m_write_callback = func;};
+		
+		/// Tie this channel to the owner object managed by shared_ptr,
+		/// prevent the owner object being destroyed in handleEvent.
+		void 	tie( const boost::shared_ptr<void>& observer);
 
 		/// for evt-poller
 		void	save_evt_status(int status){m_last_evt_status=status;};
@@ -40,17 +43,22 @@ namespace net{
 		int		evt_status()const {return m_last_evt_status;};
 
 		SOCKET_FD fd(){return m_fd;};
-	private:
+		
+		/// handle event.for io_service
 		void	process_work();
 	private:
+		void	do_process_work();
+	private:
 		std::string				m_name;
-		SOCKET_FD m_fd;
-		int		m_last_evt_status;
-		io_service&	m_service;
-		evt_notify_functor		m_error_cb;
-		evt_notify_functor		m_close_cb;
-		evt_notify_functor		m_read_cb;
-		evt_notify_functor		m_write_cb;
+		bool					m_tied;
+		SOCKET_FD 				m_fd;
+		int						m_last_evt_status;
+		io_service&				m_service;
+		evt_notify_functor		m_error_callback;
+		evt_notify_functor		m_close_callback;
+		evt_notify_functor		m_read_callback;
+		evt_notify_functor		m_write_callback;
+  		boost::weak_ptr<void> 	m_owner_ob;
 
 	};
 }

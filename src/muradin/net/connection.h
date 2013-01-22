@@ -30,7 +30,7 @@ namespace net{
 		bool	connected()const{return m_conn_status == kConnected;};
 
 		void	start();
-		void	destory();
+		void	final_destory();
 
 		bytebuffer& read_buffer();
 
@@ -44,15 +44,16 @@ namespace net{
 		void	shutdown();
 
 		/// set callback (error)
-		void	set_error_cb(const on_error& func){m_err_cb = func;};
+		void	set_error_callback(const error_callback& func){m_err_cb = func;};
+
 		/// set callback (connection open,closed)
-		void	set_close_cb(const close_callback& func){m_close_cb=func;};
+		void	set_close_callback(const close_callback& func){m_close_cb=func;};
 		/// set callback (msg has read)
-		void	set_msg_cb(const on_msg& func){m_msg_cb = func;};
+		void	set_read_callback(const read_callback& func){m_read_cb = func;};
 		/// set callback (msg has wrote)
-		void	set_msg_complete_cb(const on_msg_complete& func){m_msg_complete_cb = func;};
+		void	set_write_callback(const write_callback& func){m_write_cb = func;};
 		/// set callback (open,closed)
-		void	set_conn_cb(const on_connect& func){m_conn_cb = func;};
+		void	set_conn_callback(const connect_callback& func){m_conn_cb = func;};
 	private:
 		/// fd readable
 		void		handle_read();
@@ -64,6 +65,8 @@ namespace net{
 		void		handle_close();
 		/// wite 
 		void		write_in_loop(const void* data,size_t len);
+		/// shutdown 
+		void		shutdown_in_loop();
 	private:
 		socket 		m_socket;
 		io_service&	m_service;
@@ -72,11 +75,11 @@ namespace net{
 		bytebuffer	m_read_cache;
 		endpoint_v4	m_peer_address;
 		/// callback 
-		on_connect	m_conn_cb;
-		on_msg 		m_msg_cb;
-		on_msg_complete m_msg_complete_cb;
-		close_callback  m_close_cb;
-		on_error	m_err_cb;
+		connect_callback	m_conn_cb;
+		read_callback 		m_read_cb;
+		write_callback 		m_write_cb;
+		close_callback  	m_close_cb;
+		error_callback		m_err_cb;
 		conn_stat		m_conn_status;
 	};
 

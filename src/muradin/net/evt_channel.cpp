@@ -26,13 +26,14 @@ namespace net{
 
 	evt_channel::evt_channel(SOCKET_FD fd,io_service& ios,const std::string& name)
 	:m_name(name),
+	m_tied(false),
 	m_fd(fd),
 	m_last_evt_status(0),
 	m_service(ios),
-	m_error_cb(NULL),
-	m_close_cb(NULL),
-	m_read_cb(NULL),
-	m_write_cb(NULL)
+	m_error_callback(NULL),
+	m_close_callback(NULL),
+	m_read_callback(NULL),
+	m_write_callback(NULL)
 	{
 		//
 	}
@@ -40,28 +41,20 @@ namespace net{
 	{
 		//
 	}
+
+	void 	evt_channel::tie(const boost::shared_ptr<void>& observer)
+	{
+		assert(m_tied == false);
+		m_owner_ob = observer;
+		m_tied = true;
+	}
 	void	evt_channel::join_to_service()
 	{
 		m_service.add_channel(this);
-		/*
-		if (m_service.check_this_loop()){
-			m_service.add_channel(this);
-		}else{
-			m_service.run_task( boost::bind(&evt_channel::join_to_service,this) );
-		}
-		*/
-		
 	}
 	void	evt_channel::remove_from_service()
 	{
 		m_service.del_channel(this);
-		/*
-		if (m_service.check_this_loop()){
-			m_service.del_channel(this);
-		}else{
-			m_service.run_task( boost::bind(&evt_channel::remove_from_service,this) );
-		}
-		*/
 	}
 
 
@@ -74,19 +67,6 @@ namespace net{
 			m_last_evt_status &= (EPOLLIN|EPOLLHUP|EPOLLPRI);
 		}
 		m_service.update_channel(this);
-
-		/*
-		if (m_service.check_this_loop()){
-			if(enable){
-				m_last_evt_status |= (EPOLLIN|EPOLLHUP|EPOLLPRI);
-			}else{
-				m_last_evt_status &= (EPOLLIN|EPOLLHUP|EPOLLPRI);
-			}
-			m_service.update_channel(this);
-		}else{
-			m_service.run_task( boost::bind(&evt_channel::enable_read,this,enable) );
-		}
-		*/
 	}
 
 	void	evt_channel::enable_write(bool enable)
@@ -98,37 +78,24 @@ namespace net{
 			m_last_evt_status &=EPOLLOUT;
 		}
 		m_service.update_channel(this);
-
-		/*
-		if (m_service.check_this_loop()){
-			if(enable){
-				m_last_evt_status |=EPOLLOUT;
-			}else{
-				m_last_evt_status &=EPOLLOUT;
-			}
-			m_service.update_channel(this);
-		}else{
-			m_service.run_task( boost::bind(&evt_channel::enable_write,this,enable) );
-		}
-		*/
-
 	}
 	
-
-	void	evt_channel::process_work()
+	void	evt_channel::do_process_work()
 	{
 		//trace_evt_flag(m_last_evt_status);
 		
 		if((m_last_evt_status & EPOLLHUP) && !(m_last_evt_status & EPOLLIN)){
 			/// 连接被挂断,并且不可读
 			/// 本端引发的错误
-			LOG_WARN.stream()<<"EPOLLHUP";
-			if(m_close_cb) m_close_cb();
+
+			//LOG_WARN.stream()<<"EPOLLHUP";
+			if(m_close_callback) m_close_callback();
 		}
 		if( m_last_evt_status & EPOLLERR ){
 			/// 本端引发的错误
-			LOG_EROR.stream()<<"EPOLLERR,errno:"<< errno;
-			if(m_error_cb) m_error_cb();
+
+			//LOG_WARN.stream()<<"EPOLLERR,errno:"<< errno;
+			if(m_error_callback) m_error_callback();
 		}
 
 		if( m_last_evt_status & (EPOLLIN | EPOLLPRI | EPOLLRDHUP) ){
@@ -136,12 +103,27 @@ namespace net{
 			/// 留给上层处理半关闭事件
 
 			//LOG_INFO.stream()<<"EPOLLIN | EPOLLPRI | EPOLLRDHUP";
-			if(m_read_cb) m_read_cb();
+			if(m_read_callback) m_read_callback();
 		}
 
 		if( m_last_evt_status & EPOLLOUT ){
 			//LOG_INFO.stream()<<"EPOLLOUT";
-			if(m_write_cb) m_write_cb();
+			if(m_write_callback) m_write_callback();
+		}
+	}
+
+	void	evt_channel::process_work()
+	{
+		boost::shared_ptr<void> chenck_not_null;
+		if (m_tied){
+			chenck_not_null = m_owner_ob.lock();
+			if (chenck_not_null){
+				do_process_work();
+			}else{
+				LOG_INFO.stream()<<"connection destroyed,skip process_work";
+			}
+		}else{
+			do_process_work();
 		}
 	}
 

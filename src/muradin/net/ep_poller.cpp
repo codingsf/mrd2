@@ -40,7 +40,6 @@ evt_channel*	poller_epoll::find_channel(SOCKET_FD fd)
 		found_ptr= it->second;
 	return found_ptr;
 }	
-
 void	poller_epoll::add_channel(evt_channel* channel)
 {
 	assert_channel(channel,false);

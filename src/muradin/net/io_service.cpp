@@ -47,7 +47,7 @@ namespace net{
 		assert(m_wakeup_fd > 0);
 		
 		//LOG_INFO.stream()<<"io_service >>>>>>>>>>>>>>>>>> c-tor ";
-		m_self_channel.set_read_cb(boost::bind(&io_service::on_read,this));
+		m_self_channel.set_read_callback(boost::bind(&io_service::on_read,this));
 		//add_channel(&m_self_channel);
 		m_self_channel.join_to_service();
 		m_self_channel.enable_read(true);
@@ -114,10 +114,10 @@ namespace net{
 	void	io_service::run_task(const task& func)
 	{
 		if(check_this_loop()){
-			LOG_INFO.stream()<<"run task directly";
+			//LOG_INFO.stream()<<"run task directly";
 			func();
 		}else{
-			LOG_INFO.stream()<<"enqueue task" ;
+			//LOG_INFO.stream()<<"enqueue task" ;
 			queue_task(func);
 		}
 	}
@@ -172,7 +172,6 @@ namespace net{
 	}
 	void	io_service::wake_me_up()
 	{
-		LOG_INFO.stream()<<"wakeup loop" ;
 		static const size_t write_bytes=sizeof(void*);
 		static const char buff[write_bytes]={0};
 		ssize_t ret =::write(m_wakeup_fd,buff,write_bytes);
@@ -198,7 +197,6 @@ namespace net{
 
 	void	io_service::add_channel_in_loop(evt_channel* channel)
 	{
-		LOG_INFO.stream()<<"";
 		if( !check_this_loop()){ 
 			LOG_EROR.stream()<<"must run in-loop";
 		}
@@ -207,7 +205,6 @@ namespace net{
 
 	void	io_service::del_channel_in_loop(evt_channel* channel)
 	{
-		LOG_INFO.stream()<<"";
 		if( !check_this_loop()){ 
 			LOG_EROR.stream()<<"must run in-loop";
 		}
@@ -216,7 +213,6 @@ namespace net{
 
 	void	io_service::update_channel_in_loop(evt_channel* channel)
 	{
-		LOG_INFO.stream()<<"";
 		if( !check_this_loop()){ 
 			LOG_EROR.stream()<<"must run in-loop";
 		}

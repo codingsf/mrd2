@@ -27,14 +27,14 @@ namespace muradin{
 			void	stop();
 
 			/// 连接建立回调
-			void	set_conn_cb(const on_connect& func){m_conn_cb = func;};
+			void	set_conn_callback(const connect_callback& func){m_conn_cb = func;};
 			/// 消息发送完成回调
-			void	set_msg_cb(const on_msg& func){m_msg_cb = func;};
+			void	set_read_callback(const read_callback& func){m_read_cb = func;};
 			/// 消息接收回调
-			void	set_msg_complete_cb(const on_msg_complete& func){m_msg_complete_cb = func;};
+			void	set_write_callback(const write_callback& func){m_write_cb = func;};
 
 			/// 网络错误回调
-			void	set_error_cb(const on_error& func){m_err_cb = func;};
+			void	set_error_callback(const error_callback& func){m_err_cb = func;};
 		private:
 			void	on_new_conn();
 			void	on_remove_conn(connection_ptr conn);
@@ -42,10 +42,10 @@ namespace muradin{
 			io_service&	m_io_service;
 			acceptor	m_acceptor;
 			std::map<SOCKET_FD,connection_ptr>	m_conn_map;
-			on_connect	m_conn_cb;
-			on_msg 		m_msg_cb;
-			on_msg_complete m_msg_complete_cb;
-			on_error	m_err_cb;
+			connect_callback	m_conn_cb;
+			read_callback 		m_read_cb;
+			write_callback 		m_write_cb;
+			error_callback		m_err_cb;
 			io_service_pool m_service_pool;
 		};
 	}

@@ -14,8 +14,8 @@ namespace muradin{
 		:m_io_service(ios),
 		m_acceptor(endpoint_v4(local_ip,losten_port),ios),
 		m_conn_cb(NULL),
-		m_msg_cb(NULL),
-		m_msg_complete_cb(NULL),
+		m_read_cb(NULL),
+		m_write_cb(NULL),
 		m_err_cb(NULL),
 		m_service_pool(thread_number)
 		{
@@ -46,10 +46,12 @@ namespace muradin{
 				io_service* ios_ptr = m_service_pool.next_service();
 				connection_ptr new_conn(new connection(*ios_ptr,fd,addr));
 
-				new_conn->set_close_cb(boost::bind(&tcp_server::on_remove_conn,this,_1));
-				new_conn->set_msg_cb(m_msg_cb);
-				new_conn->set_msg_complete_cb(m_msg_complete_cb);
-				new_conn->set_conn_cb(m_conn_cb);
+				new_conn->set_close_callback(boost::bind(&tcp_server::on_remove_conn,this,_1));
+				new_conn->set_read_callback(m_read_cb);
+				new_conn->set_write_callback(m_write_cb);
+				new_conn->set_conn_callback(m_conn_cb);
+				new_conn->set_error_callback(m_err_cb);
+				// 
 				m_conn_map[fd]=new_conn;
 				LOG_INFO.stream()<<"new conn form :"<< addr.get_ip() << " : " << addr.get_port();
 				/// notify connection
@@ -62,7 +64,7 @@ namespace muradin{
 		void	tcp_server::on_remove_conn(connection_ptr conn)
 		{
 			m_conn_map.erase(conn->fd());
-			conn->destory();
+			conn->final_destory();
 			/// socket FD closed in connection's d-tor
 		}
 	}

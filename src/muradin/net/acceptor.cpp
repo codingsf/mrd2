@@ -18,7 +18,7 @@ namespace net{
 		socket_ctl::set_recv_buff_size(m_socket.fd(),16*1024);		/// FIXME::check
 
 
-		m_channel.set_read_cb(boost::bind(&acceptor::on_read,this));
+		m_channel.set_read_callback(boost::bind(&acceptor::on_read,this));
 		m_channel.join_to_service();
 		//m_service.add_channel(&m_channel);
 	}

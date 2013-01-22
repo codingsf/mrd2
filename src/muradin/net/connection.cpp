@@ -19,19 +19,19 @@ namespace net{
 	m_channle(fd,ios,"connection-chnl"),
 	m_peer_address(peer_addr),
 	m_conn_cb(NULL),
-	m_msg_cb(NULL),
-	m_msg_complete_cb(NULL),
+	m_read_cb(NULL),
+	m_write_cb(NULL),
 	m_close_cb(NULL),
-	m_err_cb(NULL)
+	m_err_cb(NULL),
 	m_conn_status(kDisconnect)
 	{
 		//LOG_INFO.stream()<<"connection >>>>>>>>>>>>>>>>>> c-tor ";
 		socket_ctl::set_tcp_nodelay(m_socket.fd(),true);
 		socket_ctl::set_keepalive(m_socket.fd());
-		m_channle.set_read_cb(boost::bind(&connection::handle_read,this));
-		m_channle.set_write_cb(boost::bind(&connection::handle_write,this));
-		m_channle.set_close_cb(boost::bind(&connection::handle_close,this));
-		m_channle.set_error_cb(boost::bind(&connection::handle_error,this));
+		m_channle.set_read_callback(boost::bind(&connection::handle_read,this));
+		m_channle.set_write_callback(boost::bind(&connection::handle_write,this));
+		m_channle.set_close_callback(boost::bind(&connection::handle_close,this));
+		m_channle.set_error_callback(boost::bind(&connection::handle_error,this));
 
 	}
 	connection::~connection()
@@ -46,7 +46,7 @@ namespace net{
 		m_conn_status=kConnected;
 		m_service.run_task(  boost::bind(m_conn_cb,shared_from_this() ) );
 	}
-	void	connection::destory()
+	void	connection::final_destory()
 	{
 		assert(m_conn_status == kDisconnect);
 		m_channle.enable_read(false);
@@ -66,19 +66,34 @@ namespace net{
 			m_service.run_task(  boost::bind(&connection::write_in_loop,this,data.data(),data.size()) );
 		}
 	}
+	void		connection::shutdown_in_loop()
+	{
+		socket::shutdown(m_socket.fd(),socket::k_tcp_close_writ);
+	}
 	void	connection::write_in_loop(const void* data,size_t len)
 	{
 		//
 		assert(m_service.check_this_loop());
-		//bool error=false;
 		int ret=m_socket.send(data,len);
 		if (ret < 0){
 			if(errno == EAGAIN){
 				m_write_cache.append(data,len);
 				m_channle.enable_write(true);
-			}else{
+			}else {
+				/*
+				if(errno == EPIPE){
+					LOG_EROR.stream()<<"write fail ---- EPIPE ----  ";
+				}else{
+					LOG_EROR.stream()<<"write fail errno = " << errno ;
+					//handle_error();
+					muradin::base::sys_error err(errno);
+					m_service.run_task( boost::bind( m_write_cb,shared_from_this(),err,0 ));
+				}
+				*/
 				LOG_EROR.stream()<<"write fail errno = " << errno ;
-				handle_error();
+				//handle_error();
+				muradin::base::sys_error err(errno);
+				m_service.run_task( boost::bind( m_write_cb,shared_from_this(),err,0 ));
 			}
 		}else{
 			if(ret < len){
@@ -86,15 +101,21 @@ namespace net{
 				m_channle.enable_write(true);
 			}
 			if(ret>0){
-				//m_msg_complete_cb(shared_from_this(),ret);
-				m_service.run_task( boost::bind( m_msg_complete_cb,shared_from_this(),ret ));
+				m_service.run_task( 
+					boost::bind( m_write_cb,shared_from_this(),muradin::base::sys_error::no_error(),ret )
+					);
 			}
 		}
 	}
 	void	connection::shutdown()
 	{
 		m_conn_status=kInDisconnect;
-		//shutdown();
+	
+		if(m_service.check_this_loop()){
+			shutdown_in_loop();
+		}else{
+			m_service.run_task(  boost::bind(&connection::shutdown_in_loop ,this) );
+		}
 	}
 
 	void		connection::handle_read()
@@ -107,24 +128,24 @@ namespace net{
 			// peer shutdown
 			m_service.run_task( boost::bind( m_conn_cb,shared_from_this()));
 			m_service.run_task( boost::bind( &connection::handle_close,this));
-			//m_conn_cb(shared_from_this());
-			//handle_close();
+
 		}else if(ret > 0 ){
 			m_read_cache.has_written(static_cast<size_t>(ret));
-			m_service.run_task( boost::bind( m_msg_cb,shared_from_this()) );
-			//m_msg_cb(shared_from_this());
+			m_service.run_task( boost::bind( m_read_cb,shared_from_this(),muradin::base::sys_error::no_error()) );
+
 		}else{
+			//handle_error();
+			muradin::base::sys_error err(errno);
 			LOG_EROR.stream()<<"read fail errno = " << errno ;
-			handle_error();
+			m_service.run_task( boost::bind( m_read_cb,shared_from_this(),err ));
 		}
 		
 	}
 	/// fd writeable
 	void		connection::handle_write()
 	{
-		// m_socket->write();
 		LOG_INFO.stream()<<"handle_write "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port();
-		/// write success call m_msg_complete_cb
+
 		int ret=m_socket.send(m_write_cache.rd_ptr(),m_write_cache.readable_bytes());
 		
 		if (ret < 0){
@@ -132,7 +153,8 @@ namespace net{
 				m_channle.enable_write(true);
 			}else{
 				LOG_EROR.stream()<<"write fail errno = " << errno ;
-				handle_error();
+				muradin::base::sys_error err(errno);
+				m_service.run_task( boost::bind( m_write_cb,shared_from_this(),err,0 ));
 			}
 		}else{
 			m_write_cache.discard(static_cast<size_t>(ret));
@@ -141,20 +163,21 @@ namespace net{
 			}
 			if(ret>0){
 				m_write_cache.discard(ret);
-				m_service.run_task( boost::bind( m_msg_complete_cb,shared_from_this(),ret ));
-				//m_msg_complete_cb(shared_from_this(),ret);
+				m_service.run_task( 
+					boost::bind( m_write_cb,shared_from_this(),muradin::base::sys_error::no_error(),ret )
+					);
 			}
 		}
 	}
 	/// handle sys-error
 	void		connection::handle_error()
 	{
-		//
-		LOG_INFO.stream()<<"handle_error "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port() << " errno = " << socket::retrieve_err(m_socket.fd());
-		if(m_err_cb){
-			//m_service.run_task(  boost::bind(m_close_cb,shared_from_this() ) );
-		}
-		///  call errcb
+		muradin::base::sys_error err( socket::retrieve_err(m_socket.fd()) );
+		LOG_INFO.stream()<<"handle_error "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port() 
+			<< " err msg = " << err.what(); 
+		if(m_err_cb)
+			m_service.run_task( boost::bind( m_err_cb,shared_from_this(),err ) );
+
 	}
 	/// network closed by peer
 	void		connection::handle_close()
