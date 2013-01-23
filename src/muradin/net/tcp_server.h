@@ -36,7 +36,7 @@ namespace muradin{
 			/// 网络错误回调
 			void	set_error_callback(const error_callback& func){m_err_cb = func;};
 		private:
-			void	on_new_conn();
+			void	on_new_conn(SOCKET_FD fd, const endpoint_v4& addr);
 			void	on_remove_conn(connection_ptr conn);
 		private:
 			io_service&	m_io_service;

@@ -41,6 +41,7 @@ namespace net{
 
 	void	connection::start()
 	{
+		m_channle.tie(shared_from_this());
 		m_channle.join_to_service();
 		m_channle.enable_read(true);
 		m_conn_status=kConnected;
@@ -49,8 +50,6 @@ namespace net{
 	void	connection::final_destory()
 	{
 		assert(m_conn_status == kDisconnect);
-		m_channle.enable_read(false);
-		m_channle.enable_write(false);
 		m_channle.remove_from_service();
 	}
 
@@ -185,9 +184,15 @@ namespace net{
 		// close passivity
 		LOG_INFO.stream()<<"handle_close "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port();
 		m_conn_status=kDisconnect;
-		m_service.run_task(  boost::bind(m_conn_cb,shared_from_this() ) );
-		m_service.run_task(  boost::bind(m_close_cb,shared_from_this() ) );
+		m_channle.enable_read(false);
+		m_channle.enable_write(false);
+		
+		//connection_ptr conn_ptr(shared_from_this());
+		//m_service.run_task(  boost::bind(m_conn_cb, conn_ptr) );
+		//m_close_cb(conn_ptr);
 
+		m_service.run_task(  boost::bind(m_conn_cb,shared_from_this()) );
+		m_service.run_task(  boost::bind(m_close_cb,shared_from_this()) );
 
 		//m_conn_cb(shared_from_this());
 		//m_close_cb(shared_from_this()); 

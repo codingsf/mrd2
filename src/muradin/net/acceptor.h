@@ -14,7 +14,7 @@ namespace net{
 	
 class acceptor
 {
-	typedef boost::function<void()> evt_callback;
+	typedef boost::function<void(SOCKET_FD , const endpoint_v4&)> evt_callback;
 public:
 	acceptor(const endpoint_v4& local_addr,io_service& ios);
 	~acceptor();

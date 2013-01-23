@@ -19,7 +19,7 @@ namespace muradin{
 		m_err_cb(NULL),
 		m_service_pool(thread_number)
 		{
-			m_acceptor.set_accept_cb( boost::bind(&tcp_server::on_new_conn,this) );
+			m_acceptor.set_accept_cb( boost::bind(&tcp_server::on_new_conn,this,_1,_2) );
 		}
 		
 		tcp_server::~tcp_server()
@@ -36,30 +36,22 @@ namespace muradin{
 			m_acceptor.stop();
 		}
 
-		void	tcp_server::on_new_conn()
+		void	tcp_server::on_new_conn(SOCKET_FD fd, const endpoint_v4& addr)
 		{
-			/// get fd form TCP
-			///  do accept,get peer address
-			endpoint_v4 addr;
-			SOCKET_FD fd = socket::accept(m_acceptor.fd(),addr); 
-			if (fd != -1 ){
-				io_service* ios_ptr = m_service_pool.next_service();
-				connection_ptr new_conn(new connection(*ios_ptr,fd,addr));
+			
+			io_service* ios_ptr = m_service_pool.next_service();
+			connection_ptr new_conn(new connection(*ios_ptr,fd,addr));
 
-				new_conn->set_close_callback(boost::bind(&tcp_server::on_remove_conn,this,_1));
-				new_conn->set_read_callback(m_read_cb);
-				new_conn->set_write_callback(m_write_cb);
-				new_conn->set_conn_callback(m_conn_cb);
-				new_conn->set_error_callback(m_err_cb);
-				// 
-				m_conn_map[fd]=new_conn;
-				LOG_INFO.stream()<<"new conn form :"<< addr.get_ip() << " : " << addr.get_port();
-				/// notify connection
-				new_conn->start();
-			}else{
-				// got error
-				LOG_EROR.stream()<<"epoll_ctl fail,errno:"<< errno;
-			}
+			new_conn->set_close_callback(boost::bind(&tcp_server::on_remove_conn,this,_1));
+			new_conn->set_read_callback(m_read_cb);
+			new_conn->set_write_callback(m_write_cb);
+			new_conn->set_conn_callback(m_conn_cb);
+			new_conn->set_error_callback(m_err_cb);
+			// 
+			m_conn_map[fd]=new_conn;
+			LOG_INFO.stream()<<"new conn form :"<< addr.get_ip() << " : " << addr.get_port();
+			/// notify connection
+			new_conn->start();
 		}
 		void	tcp_server::on_remove_conn(connection_ptr conn)
 		{
