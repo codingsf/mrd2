@@ -88,7 +88,7 @@ namespace net{
 		if(check_this_loop() ){
 			add_channel_in_loop(channel);		
 		}else{
-			LOG_INFO.stream()<<"";
+			//LOG_INFO.stream()<<"";
 			queue_task( boost::bind(&io_service::add_channel_in_loop,this,channel));
 		}
 	}
@@ -106,7 +106,7 @@ namespace net{
 		if(check_this_loop() ){
 			update_channel_in_loop(channel);		
 		}else{
-			LOG_INFO.stream()<<"";
+			//LOG_INFO.stream()<<"";
 			queue_task( boost::bind(&io_service::update_channel_in_loop,this,channel));
 		}
 	}

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdlib.h> // for abort()
 #include <string.h> // for strrchr strerror
+#include <stdio.h> // for strrchr strerror
 
 
 #define		ENDLN 	("\r\n")
@@ -15,11 +16,6 @@ namespace base
 
 OutputFunc	g_out_put_func=NULL;
 FlushFunc	g_flush_func=NULL;
-#if defined(ENABLE_LOG_FUNCTION_NAME)
-static size_t g_log_head_padding=90;
-#else
-static size_t g_log_head_padding=70;
-#endif
 
 static loging_level	g_log_level=ll_debug;
 static const	std::string	g_crlf="\r\n";
@@ -85,46 +81,34 @@ public:
 	{
 		ostream_.clear();
 		ostream_.str ("");
-		prepare(source_file,func_name,line_number);
+		prepare(file_base_name(source_file),func_name,line_number);
 		log_levl_= log_lvl;
 		return *this;
 	}
 	void		prepare(const std::string& source_file,const std::string& func_name,int line_number)
 	{
-		static const char* space_2="  ";
-		ostream_<<"["<< LOG_LVL_NAME[log_levl_]<<"]";
-		ostream_<<space_2<<"UTC "<< timestamp::now ().to_formatted_string ()<<space_2;
-		ostream_<< "[";
-		if (source_file.length() + func_name.length() > 0){
-			ostream_<<"S="<<source_file<<g_str_spliter
+		ostream_<<timestamp::now ().to_formatted_string ()<< " ";
+		ostream_<<LOG_LVL_NAME[log_levl_]<< " | ";
 #if defined(ENABLE_LOG_FUNCTION_NAME)
-				<<"F="<<func_name<<g_str_spliter
+		sprintf(log_src_info_,"%s %s:%d",func_name.c_str(), source_file.c_str(),line_number);
+#else
+		sprintf(log_src_info_,"%s:%d", source_file.c_str(),line_number);
 #endif
-				<<"L="<<line_number;
-		}
-		ostream_<<"]"<<space_2;
-		pading_space();
 	}
 	void		prepare(const std::string& source_file,const std::string& func_name,int line_number,int error_no)
 	{
-		static const char* space_2="  ";
-		ostream_<<"["<< LOG_LVL_NAME[log_levl_]<<"]";
-		ostream_<< space_2<<"UTC "<<timestamp::now ().to_formatted_string ()<<space_2;
-		ostream_<< "[";
-		if (source_file.length() + func_name.length() > 0){
-			ostream_<<"S="<<source_file<<g_str_spliter
+		ostream_<<timestamp::now ().to_formatted_string ();
+		ostream_<<LOG_LVL_NAME[log_levl_]<< " | ";
 #if defined(ENABLE_LOG_FUNCTION_NAME)
-			<<"F="<<func_name<<g_str_spliter
+		sprintf(log_src_info_,"%s %s:%d - errno : %d",func_name.c_str(), source_file.c_str(),line_number,error_no);
+#else
+		sprintf(log_src_info_,"%s:%d - errno : %d", source_file.c_str(),line_number,error_no);
 #endif
-			<<"L="<<line_number;
-		}
-		ostream_<<"]"<<space_2<<"error = "<<error_no << ".";
-		pading_space();
 
 	}
 	virtual	void		finish()
 	{
-		ostream_<<ENDLN;
+		ostream_<<" @"<<log_src_info_<<ENDLN;
 		std::string out = ostream_.str ();
 		ostream_.clear();
 		ostream_.str ("");
@@ -145,18 +129,11 @@ public:
 	{return ostream_;}
 
 private:
-	void	pading_space()
-	{
-		if(ostream_.str ().length() < g_log_head_padding){
-			size_t padding_size= g_log_head_padding - ostream_.str ().length();
-			for (;padding_size>0;padding_size--){
-				ostream_<<" ";
-			}
-		}
-	}
+
 private:
 	std::ostringstream			ostream_;
 	loging_level				log_levl_;
+	char						log_src_info_[512];
 };
 
 typedef	loger	ostream_loger;
