@@ -33,7 +33,8 @@ namespace net{
 	m_error_callback(NULL),
 	m_close_callback(NULL),
 	m_read_callback(NULL),
-	m_write_callback(NULL)
+	m_write_callback(NULL),
+	m_progress_in_write(false)
 	{
 		//
 	}
@@ -72,12 +73,15 @@ namespace net{
 	void	evt_channel::enable_write(bool enable)
 	{
 
+		if(enable && m_progress_in_write) return;
+
 		if(enable){
 			m_last_evt_status |=EPOLLOUT;
 		}else{
 			m_last_evt_status &=EPOLLOUT;
 		}
 		m_service.update_channel(this);
+		m_progress_in_write = enable;
 	}
 	
 	void	evt_channel::do_process_work()
@@ -107,6 +111,7 @@ namespace net{
 		}
 
 		if( m_last_evt_status & EPOLLOUT ){
+			m_progress_in_write=false;
 			//LOG_INFO.stream()<<"EPOLLOUT";
 			if(m_write_callback) m_write_callback();
 		}

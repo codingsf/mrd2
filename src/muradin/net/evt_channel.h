@@ -59,6 +59,7 @@ namespace net{
 		evt_notify_functor		m_read_callback;
 		evt_notify_functor		m_write_callback;
   		boost::weak_ptr<void> 	m_owner_ob;
+  		bool					m_progress_in_write;
 
 	};
 }

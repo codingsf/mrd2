@@ -96,8 +96,9 @@ namespace net{
 					m_service.run_task( boost::bind( m_write_cb,shared_from_this(),err,0 ));
 				}
 				*/
-				LOG_EROR.stream()<<"write fail errno = " << errno ;
-				//handle_error();
+				
+				//LOG_EROR.stream()<<"write fail errno = " << errno ;
+			
 				muradin::base::sys_error err(errno);
 				m_service.run_task( boost::bind( m_write_cb,shared_from_this(),err,0 ));
 			}
@@ -140,9 +141,8 @@ namespace net{
 			m_service.run_task( boost::bind( m_read_cb,shared_from_this(),muradin::base::sys_error::no_error()) );
 
 		}else{
-			//handle_error();
 			muradin::base::sys_error err(errno);
-			LOG_EROR.stream()<<"read fail errno = " << errno ;
+			//LOG_EROR.stream()<<"read fail errno = " << errno ;
 			m_service.run_task( boost::bind( m_read_cb,shared_from_this(),err ));
 		}
 		
@@ -150,7 +150,7 @@ namespace net{
 	/// fd writeable
 	void		connection::handle_write()
 	{
-		LOG_INFO.stream()<<"handle_write "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port();
+		//LOG_INFO.stream()<<"handle_write "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port();
 
 		int ret=m_socket.send(m_write_cache.rd_ptr(),m_write_cache.readable_bytes());
 		
@@ -158,7 +158,7 @@ namespace net{
 			if(errno == EAGAIN){
 				m_channle.enable_write(true);
 			}else{
-				LOG_EROR.stream()<<"write fail errno = " << errno ;
+				//LOG_EROR.stream()<<"write fail errno = " << errno ;
 				muradin::base::sys_error err(errno);
 				m_service.run_task( boost::bind( m_write_cb,shared_from_this(),err,0 ));
 			}
@@ -179,8 +179,7 @@ namespace net{
 	void		connection::handle_error()
 	{
 		muradin::base::sys_error err( socket::retrieve_err(m_socket.fd()) );
-		LOG_INFO.stream()<<"handle_error "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port() 
-			<< " err msg = " << err.what(); 
+		LOG_INFO.stream()<<"handle_error "<< m_peer_address.get_ip() << " : " << m_peer_address.get_port() << " err msg = " << err.what(); 
 		if(m_err_cb)
 			m_service.run_task( boost::bind( m_err_cb,shared_from_this(),err ) );
 

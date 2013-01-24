@@ -49,7 +49,9 @@ namespace muradin{
 			new_conn->set_error_callback(m_err_cb);
 			// 
 			m_conn_map[fd]=new_conn;
-			LOG_INFO.stream()<<"new conn form :"<< addr.get_ip() << " : " << addr.get_port();
+			
+			//LOG_INFO.stream()<<"new conn form :"<< addr.get_ip() << " : " << addr.get_port();
+			
 			/// notify connection
 			new_conn->start();
 		}
