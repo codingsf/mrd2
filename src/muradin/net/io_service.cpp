@@ -20,7 +20,6 @@ namespace{
 		}
 	};
 	igrone_sig_pipe ig_pipe;
-
 }
 
 
