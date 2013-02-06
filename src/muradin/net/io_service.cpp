@@ -171,18 +171,16 @@ namespace net{
 	}
 	void	io_service::wake_me_up()
 	{
-		static const size_t write_bytes=sizeof(void*);
-		static const char buff[write_bytes]={0};
-		ssize_t ret =::write(m_wakeup_fd,buff,write_bytes);
-		assert(ret == write_bytes);
+		static boost::uint64_t	n64=0;
+		ssize_t ret =::write(m_wakeup_fd,&n64,sizeof(n64));
+		assert(ret == sizeof(n64) );
 	}
 
 	void	io_service::on_read()
 	{
-		static const size_t read_bytes=sizeof(void*);
-		static char buff[read_bytes]={0};
-		ssize_t ret =::read(m_wakeup_fd,buff,read_bytes);
-		assert(ret == read_bytes);
+		static boost::uint64_t	n64=0;
+		ssize_t ret =::read(m_wakeup_fd,&n64,sizeof(n64));
+		assert(ret == sizeof(n64));
 	}
 	void	io_service::wait_channel(channel_list& saver,boost::uint32_t timeout_ms)
 	{
