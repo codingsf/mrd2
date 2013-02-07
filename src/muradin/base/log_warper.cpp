@@ -100,15 +100,15 @@ public:
 		ostream_<<timestamp::now ().to_formatted_string ();
 		ostream_<<LOG_LVL_NAME[log_levl_]<< " | ";
 #if defined(ENABLE_LOG_FUNCTION_NAME)
-		sprintf(log_src_info_,"%s %s:%d - errno : %d",func_name.c_str(), source_file.c_str(),line_number,error_no);
+		sprintf(log_src_info_,"%s %s:%d | errno : %d",func_name.c_str(), source_file.c_str(),line_number,error_no);
 #else
-		sprintf(log_src_info_,"%s:%d - errno : %d", source_file.c_str(),line_number,error_no);
+		sprintf(log_src_info_,"%s:%d | errno : %d", source_file.c_str(),line_number,error_no);
 #endif
 
 	}
 	virtual	void		finish()
 	{
-		ostream_<<" @"<<log_src_info_<<ENDLN;
+		ostream_<<" @ "<<log_src_info_<<ENDLN;
 		std::string out = ostream_.str ();
 		ostream_.clear();
 		ostream_.str ("");

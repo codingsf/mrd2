@@ -76,12 +76,12 @@ private:
 
 inline bool operator<(timestamp lhs, timestamp rhs)
 {
-  return lhs.micro_seconds_since_epoch() < rhs.micro_seconds_since_epoch();
+	return lhs.micro_seconds_since_epoch() < rhs.micro_seconds_since_epoch();
 }
 
 inline bool operator==(timestamp lhs, timestamp rhs)
 {
-  return lhs.micro_seconds_since_epoch() == rhs.micro_seconds_since_epoch();
+	return lhs.micro_seconds_since_epoch() == rhs.micro_seconds_since_epoch();
 }
 
 ///
@@ -93,8 +93,8 @@ inline bool operator==(timestamp lhs, timestamp rhs)
 /// resolution for next 100 years.
 inline double time_difference(timestamp high, timestamp low)
 {
-  boost::int64_t diff = high.micro_seconds_since_epoch() - low.micro_seconds_since_epoch();
-  return static_cast<double>(diff) / timestamp::kMicroSecondsPerSecond;
+	boost::int64_t diff = high.micro_seconds_since_epoch() - low.micro_seconds_since_epoch();
+	return static_cast<double>(diff) / timestamp::kMicroSecondsPerSecond;
 }
 
 ///
@@ -104,8 +104,8 @@ inline double time_difference(timestamp high, timestamp low)
 ///
 inline timestamp add_time(timestamp tmstamp, double seconds)
 {
-  boost::int64_t delta = static_cast<int64_t>(seconds * timestamp::kMicroSecondsPerSecond);
-  return timestamp(tmstamp.micro_seconds_since_epoch() + delta);
+	boost::int64_t delta = static_cast<int64_t>(seconds * timestamp::kMicroSecondsPerSecond);
+	return timestamp(tmstamp.micro_seconds_since_epoch() + delta);
 }
 
 }
